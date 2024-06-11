@@ -2,9 +2,11 @@
 #include <EEPROM.h>
 
 //choose digital pins compatibles with your board
-#define STB A0 // Strobe digital pin
-#define CLK A1 // clock digital pin
-#define DIO A2 // data digital pin
+#define STB 3 // Strobe digital pin
+#define CLK 4 // clock digital pin
+#define DIO 5 // data digital pin
+
+#define seed_pin A0 // uses an analogue signal to set the random seed
 
 TM1638 tm(CLK,DIO,STB);
 
@@ -119,7 +121,7 @@ void unload (int _delay) {
 void lose() {
   //lights all segments and leds in exploding pattern
   // TODO >>>>>>>>>>>>>>
-  int lose[8] = {e,e,e,e,e,e,e,e};
+  int lose[8] = {ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8]};
   display_line(lose);
 
 }
@@ -438,11 +440,11 @@ void setup() {
   Serial.begin(9600);
   tm.reset();
   tm.displaySetBrightness(low_brightness);
-  EEPROM.get(ee_address, ee_seed);
+  // EEPROM.get(ee_address, ee_seed);
   randomSeed(ee_seed);
-  ee_seed = random(100);
+  ee_seed = analogRead(seed_pin);
   Serial.print("ee_seed: ");
-  Serial.println(ee_seed);  EEPROM.put(ee_address, ee_seed);
+  // Serial.println(ee_seed);  EEPROM.put(ee_address, ee_seed);
   // tm.test();
   for (int rep=0; rep<5; rep++) {
     roll(50);
