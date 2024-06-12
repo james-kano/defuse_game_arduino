@@ -2,9 +2,14 @@
 #include <EEPROM.h>
 
 //choose digital pins compatibles with your board
-#define STB A0 // Strobe digital pin
-#define CLK A1 // clock digital pin
-#define DIO A2 // data digital pin
+#define STB 3 // Strobe digital pin
+#define CLK 4 // clock digital pin
+#define DIO 5 // data digital pin
+
+#define explode_pin 7
+#define safe_pin 6
+
+#define seed_pin A0 // uses an analogue signal to set the random seed
 
 TM1638 tm(CLK,DIO,STB);
 
@@ -118,9 +123,10 @@ void unload (int _delay) {
 
 void lose() {
   //lights all segments and leds in exploding pattern
-  // TODO >>>>>>>>>>>>>>
-  int lose[8] = {e,e,e,e,e,e,e,e};
+  int lose[8] = {ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8]};
   display_line(lose);
+  tm.writeLeds(255);
+  digitalWrite(explode_pin, HIGH);
 
 }
 
@@ -368,12 +374,12 @@ int exec_game(int _game_select, int _win_len, int _buttons) {
       play_memory(_win_len, _buttons);
     break;
     case 1:
-      _win_len = 3;
-      play_math(_win_len, _buttons);
-    break;
-    case 2:
       _win_len = 4;
       play_spatial(_win_len, _buttons);
+    break;
+    case 2:
+      _win_len = 3;
+      play_math(_win_len, _buttons);
     break;
   }
   return _win_len;
@@ -390,6 +396,8 @@ int give_button_num() {
   if (_buttons != 0) {
     if (pressed == false) {
       pressed = true;
+      Serial.print("Button: ");
+      Serial.println(_buttons);
       return _buttons;
     }
   }
@@ -435,14 +443,17 @@ int standby = 0;
 
 
 void setup() {
+  pinMode(explode_pin, OUTPUT);
+  pinMode(safe_pin, OUTPUT);
+  digitalWrite(explode_pin, LOW);
+  digitalWrite(safe_pin, LOW);
+
   Serial.begin(9600);
   tm.reset();
   tm.displaySetBrightness(low_brightness);
-  EEPROM.get(ee_address, ee_seed);
+  ee_seed = analogRead(seed_pin);
   randomSeed(ee_seed);
-  ee_seed = random(100);
-  Serial.print("ee_seed: ");
-  Serial.println(ee_seed);  EEPROM.put(ee_address, ee_seed);
+  Serial.println(ee_seed);
   // tm.test();
   for (int rep=0; rep<5; rep++) {
     roll(50);
@@ -490,6 +501,7 @@ void loop() {
           wave(75);
         }
         display_line(safe);
+        digitalWrite(safe_pin, HIGH);
         final_display++;
       }
     }
