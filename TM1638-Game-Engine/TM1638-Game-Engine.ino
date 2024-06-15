@@ -2,12 +2,12 @@
 #include <EEPROM.h>
 
 //choose digital pins compatibles with your board
-#define STB 3 // Strobe digital pin
-#define CLK 4 // clock digital pin
-#define DIO 5 // data digital pin
+#define STB 10 // Strobe digital pin
+#define CLK 11 // clock digital pin
+#define DIO 12 // data digital pin
 
-#define explode_pin 7
-#define safe_pin 6
+#define safe_pin 2
+#define explode_pin 3
 
 #define seed_pin A0 // uses an analogue signal to set the random seed
 
