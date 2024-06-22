@@ -12,9 +12,9 @@
 */
 
 
-const int win_sig_out = 2;
-const int lose_sig_out = 3;
-const int lose_sig_in = 4;
+const int win_sig_out = 5;
+const int lose_sig_out = 6;
+const int lose_sig_in = 7;
 
 const int high_rail = 10;
 const int low_rail = 11;
@@ -32,9 +32,9 @@ int curr_pin_states[6] = {0, 0, 0, 0, 0, 0};
 int allowed_mistakes[6] = {1, 1, 1, 1, 1, 1};
 
 //Start light pin declarations
-const int top = 7;
-const int middle = 8;
-const int bottom = 9;
+const int top = 2;
+const int middle = 3;
+const int bottom = 4;
 
 bool wire_change = false;
 int progress = 0;
@@ -75,7 +75,10 @@ void lose () {
 
 bool check_mistakes() {
   // Checks for disallowed mismatched wire states (mistakes)
-  bool mistake = false;  
+  bool mistake = false;
+  
+  ToDo: <<<<<<<<<<
+  
   return mistake;
 }
 
@@ -84,27 +87,27 @@ void check_progress() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0) {
+      if (curr_pin_states[2] == 2 && curr_pin_states[3] == 1) {
         correct = true;
       }
       break;
     case 1:
-      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 0 && curr_pin_states[0] == 1) {
+      if (curr_pin_states[2] == 2 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0) {
         correct = true;
       }
       break;
     case 2:
-      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 0 && curr_pin_states[0] == 1 && curr_pin_states[3] == 1) {
+      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 2) {
         correct = true;
       }
       break;
     case 3:
-      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 1 && curr_pin_states[0] == 1 && curr_pin_states[3] == 0) {
+      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 1 && curr_pin_states[4] == 0) {
         correct = true;
       }
       break;
     case 4:
-      if (curr_pin_states[4] == 1 && curr_pin_states[1] == 0 && curr_pin_states[5] == 1 && curr_pin_states[0] == 1 && curr_pin_states[3] == 0) {
+      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 2 && curr_pin_states[5] == 0 && curr_pin_states[1] == 0 && curr_pin_states[4] == 0) {
         correct = true;
       }
       break;
