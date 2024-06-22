@@ -1,17 +1,24 @@
-
 /*
-  Basic wiring program (POC) for wires game.
-  This verifies that the wires are reading correctly.
+  Auto-generated wiring program template for wires game.
 
   Reads against 3 states:
    - High rail connected
    - Low rail connected
    - Disconnected
 
-  High rail sould be connected to 3V3 terminal.
-  Low rail should be connected by 10K to 3V3 and 10K to GND (sits between two 10K resistors).
+  High rail should be connected to digital pin 5.
+  Low rail should be connected to digital pin 6.
   All input wires should have 100K pull-down to GND, then conncted to inputs specified below. 
 */
+
+
+const int win_sig_out = 2;
+const int lose_sig_out = 3;
+const int lose_sig_in = 4;
+
+const int high_rail = 10;
+const int low_rail = 11;
+
 const int red = A0;
 const int yellow = A1;
 const int orange = A2;
@@ -22,113 +29,144 @@ const int green = A5;
 const int wires[6] = {red, yellow, orange, white, blue, green};
 
 int curr_pin_states[6] = {0, 0, 0, 0, 0, 0};
-int allowed_opens[6] = {0, 0, 0, 0, 0, 0};
+int allowed_mistakes[6] = {1, 1, 1, 1, 1, 1};
 
-const int low_thresh = 100;
-const int up_thresh = 500;
+//Start light pin declarations
+const int top = 7;
+const int middle = 8;
+const int bottom = 9;
 
 bool wire_change = false;
 int progress = 0;
 int mistake_count = 0;
-int allowed_mistakes = 0;
-
-
-int mapPinValue(int input) {
-  // Maps the input value against uneven thresholds for 3-level mapping
-  // open = 0, low = 1, high = 2
-  int output = 0;
-  if (input > up_thresh) {
-    output = 2;
-  }
-  else {
-    if (input > low_thresh) {
-      output = 1;
-    }
-  }
-  return output;
-}
+int lose_count = 3;
 
 
 int get_curr_pin_state(int pin) {
   // Gets the current mapped state of a given pin
-  int val_in = analogRead(pin);
-  val_in = mapPinValue(val_in);
+  // Maps the input value against uneven thresholds for 3-level mapping
+  // open = 0, low = 1, high = 2
+  int val_in = 0;
+  digitalWrite(high_rail, HIGH);
+  if (digitalRead(pin) == HIGH) {
+    val_in = 2;
+  }
+  digitalWrite(high_rail, LOW);
+  digitalWrite(low_rail, HIGH);
+  if (digitalRead(pin) == HIGH) {
+    val_in = 1;
+  }
+  digitalWrite(low_rail, LOW);
   return val_in;
 }
 
 
 void safe() {
-  // actions upon game won
-
+  // Actions upon game won
+  digitalWrite(win_sig_out, HIGH);
 }
 
 
 void lose () {
-  // actions upon game lose
-
+  // Actions upon game lose
+  digitalWrite(lose_sig_out, HIGH);
 }
 
 
-bool check_changed_pins() {
-// Checks the changed pins for incorrect states
-  bool _allowed_opens = false;
-  switch (progress) {
-    case 1:
-      // allowed opens should be [1 for wire in wires if allowed_open else 0]
-      break;
-    case 2:
-      // statements
-      break;
-    default:
-      // statements
-
-      break;
-  }
+bool check_mistakes() {
+  // Checks for disallowed mismatched wire states (mistakes)
+  bool mistake = false;  
+  return mistake;
 }
 
 void check_progress() {
   // Checks the progress and increments if successful
+  bool correct = false;
   switch (progress) {
-    case 1:
-      // compare against required
-      if correct {
-        // set curr_pin_states
-        progress ++;
+    case 0:
+      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0) {
+        correct = true;
       }
-      else {
-        // check allowed_opens
-        if (check_check_allowed_opens() == false) {
-          mistake_count++;
-        }
+      break;
+    case 1:
+      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 0 && curr_pin_states[0] == 1) {
+        correct = true;
       }
       break;
     case 2:
-      // statements
+      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 0 && curr_pin_states[0] == 1 && curr_pin_states[3] == 1) {
+        correct = true;
+      }
       break;
-    default:
-      // statements
-
+    case 3:
+      if (curr_pin_states[4] == 0 && curr_pin_states[1] == 0 && curr_pin_states[5] == 1 && curr_pin_states[0] == 1 && curr_pin_states[3] == 0) {
+        correct = true;
+      }
+      break;
+    case 4:
+      if (curr_pin_states[4] == 1 && curr_pin_states[1] == 0 && curr_pin_states[5] == 1 && curr_pin_states[0] == 1 && curr_pin_states[3] == 0) {
+        correct = true;
+      }
       break;
   }
+  if (correct == true) {
+      // set curr_pin_states
+      for (int i=0; i<6; i++) {
+        int curr_pin_state = get_curr_pin_state(wires[i]);
+        int prev_pin_state = curr_pin_states[i];
+      }
+      progress ++;
+  }
+  else {
+    // check mistakes
+    bool mistake = check_mistakes();
+    if (mistake == true) {
+      mistake_count++;
+    }
+  }
+  Serial.print("Progress: ");
+  Serial.println(progress);
 }
 
+
 void setup() {
-  // set the current wire conditions (and allowed opens to starting opens)
+  Serial.begin(9600);
+  // set the current wire conditions
   for (int i=0; i<6; i++) {
     int curr_pin_state = get_curr_pin_state(wires[i]);
     curr_pin_states[i] = curr_pin_state;
-    if (curr_pin_state == 0) {
-      allowed_opens[i] = 1;
-    }
-
   }
-
+  // setup the win / lose signal wires
+  pinMode(win_sig_out, OUTPUT);
+  digitalWrite(win_sig_out, LOW);
+  pinMode(lose_sig_out, OUTPUT);
+  digitalWrite(lose_sig_out, LOW);
+  pinMode(lose_sig_in, INPUT);
+  // setup the rail pins;
+  pinMode(high_rail, OUTPUT);
+  digitalWrite(high_rail, LOW);
+  pinMode(low_rail, OUTPUT);
+  digitalWrite(low_rail, LOW);
+  // set the sequence indicator LEDs
+  pinMode(top, OUTPUT);
+  digitalWrite(top, HIGH);
+  pinMode(middle, OUTPUT);
+  digitalWrite(middle, HIGH);
+  pinMode(bottom, OUTPUT);
+  digitalWrite(bottom, HIGH);
+  // set the wire pins to be digital
+  pinMode(red, INPUT);
+  pinMode(yellow, INPUT);
+  pinMode(orange, INPUT);
+  pinMode(white, INPUT);
+  pinMode(blue, INPUT);
+  pinMode(green, INPUT);
 
 }
 
 
 void loop() {
-  // run the game logic
+  // Game loop
   wire_change = false;
   // check for wire change
   for (int i=0; i<6; i++) {
@@ -136,10 +174,15 @@ void loop() {
     int prev_pin_state = curr_pin_states[i];
     if (curr_pin_state != prev_pin_state) {
       wire_change = true;
+      curr_pin_states[i] = curr_pin_state;
+      Serial.print("A");
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println(curr_pin_state);
+      delay(100);
     }
   }
-
-  if (wire_change == true && mistake_count < allowed_mistakes) {
+  if (wire_change == true && mistake_count < lose_count) {
     check_progress();
   }
 
@@ -147,9 +190,8 @@ void loop() {
     safe();
   }
   else {
-    if (mistake_count == allowed_mistakes) {
+    if (mistake_count == lose_count) {
       lose();
     }
   }
-
 }
