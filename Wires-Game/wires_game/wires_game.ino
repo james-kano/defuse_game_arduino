@@ -12,12 +12,15 @@
 */
 
 
-const int win_sig_out = 5;
-const int lose_sig_out = 6;
-const int lose_sig_in = 7;
+const int win_sig_out = 10;
+const int lose_sig_out = 11;
+const int lose_sig_in = 12;
 
-const int high_rail = 10;
-const int low_rail = 11;
+const int high_rail = 7;
+const int low_rail = 8;
+
+int seed_pin = A6;
+int ee_seed = 0;
 
 const int red = A0;
 const int yellow = A1;
@@ -77,8 +80,6 @@ bool check_mistakes() {
   // Checks for disallowed mismatched wire states (mistakes)
   bool mistake = false;
   
-  ToDo: <<<<<<<<<<
-  
   return mistake;
 }
 
@@ -87,27 +88,27 @@ void check_progress() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[2] == 2 && curr_pin_states[3] == 1) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[1] == 2) {
         correct = true;
       }
       break;
     case 1:
-      if (curr_pin_states[2] == 2 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[1] == 0) {
         correct = true;
       }
       break;
     case 2:
-      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 2) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0) {
         correct = true;
       }
       break;
     case 3:
-      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 1 && curr_pin_states[4] == 0) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0 && curr_pin_states[4] == 0) {
         correct = true;
       }
       break;
     case 4:
-      if (curr_pin_states[2] == 0 && curr_pin_states[3] == 2 && curr_pin_states[5] == 0 && curr_pin_states[1] == 0 && curr_pin_states[4] == 0) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0 && curr_pin_states[4] == 2 && curr_pin_states[0] == 0) {
         correct = true;
       }
       break;
@@ -134,6 +135,8 @@ void check_progress() {
 
 void setup() {
   Serial.begin(9600);
+  ee_seed = analogRead(seed_pin);
+  randomSeed(ee_seed);
   // set the current wire conditions
   for (int i=0; i<6; i++) {
     int curr_pin_state = get_curr_pin_state(wires[i]);
@@ -156,7 +159,7 @@ void setup() {
   pinMode(middle, OUTPUT);
   digitalWrite(middle, HIGH);
   pinMode(bottom, OUTPUT);
-  digitalWrite(bottom, HIGH);
+  digitalWrite(bottom, LOW);
   // set the wire pins to be digital
   pinMode(red, INPUT);
   pinMode(yellow, INPUT);
@@ -170,8 +173,12 @@ void setup() {
 
 void loop() {
   // Game loop
-  wire_change = false;
+  // check if lost elsewhere
+  if (digitalRead(lose_sig_in) == HIGH) {
+    mistake_count == lose_count;
+  }
   // check for wire change
+  wire_change = false;
   for (int i=0; i<6; i++) {
     int curr_pin_state = get_curr_pin_state(wires[i]);
     int prev_pin_state = curr_pin_states[i];
