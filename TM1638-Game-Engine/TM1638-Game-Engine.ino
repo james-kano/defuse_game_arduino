@@ -1,5 +1,4 @@
 #include <TM1638.h>
-#include <EEPROM.h>
 
 //choose digital pins compatibles with your board
 #define STB 10 // Strobe digital pin
@@ -8,6 +7,8 @@
 
 #define safe_pin 2
 #define explode_pin 3
+#define lose_in 4
+#define win_in_wires 5
 
 #define seed_pin A0 // uses an analogue signal to set the random seed
 
@@ -127,7 +128,6 @@ void lose() {
   display_line(lose);
   tm.writeLeds(255);
   digitalWrite(explode_pin, HIGH);
-
 }
 
   //-------------------------//
@@ -443,8 +443,11 @@ int standby = 0;
 
 
 void setup() {
+  // setup explode, defuse and coordination pins
   pinMode(explode_pin, OUTPUT);
   pinMode(safe_pin, OUTPUT);
+  pinMode(lose_in, INPUT);
+  pinMode(win_in_wires, INPUT);
   digitalWrite(explode_pin, LOW);
   digitalWrite(safe_pin, LOW);
 
@@ -464,14 +467,18 @@ void setup() {
 
   //standby mode sub-loop
   while (standby < 2) {
-    tm.writeLeds(game_select_leds[game_select]);
-    buttons = give_button_num();
-    if (buttons != 0) {
+    if (alive == true) {
+      tm.writeLeds(game_select_leds[game_select]);
+      buttons = give_button_num();
+    }
+    if (buttons != 0 || digitalRead(lose_in) == HIGH) {
       if (buttons == 64) {
         standby++;
       }
       else {
         lose();
+        final_display++;
+        alive = false;
       }
     }
   }
@@ -483,6 +490,11 @@ void setup() {
 
 void loop() {
   //main loop
+  // check if loste elsewhere
+  if (digitalRead(lose_in) == HIGH) {
+    alive = false;
+  }
+  //continue game
   buttons = give_button_num();
 
   if ((progress < win_len) && (alive == true)) {
@@ -492,7 +504,7 @@ void loop() {
       win_len = exec_game(game_select, win_len, buttons);
     }
   }
-  else{
+  else {
     if (alive == true) {
       if (final_display == 0) {
         tm.writeLeds(0);
@@ -501,8 +513,10 @@ void loop() {
           wave(75);
         }
         display_line(safe);
-        digitalWrite(safe_pin, HIGH);
         final_display++;
+      }
+      if (digitalRead(win_in_wires) == HIGH) {
+        digitalWrite(safe_pin, HIGH);
       }
     }
     else {
