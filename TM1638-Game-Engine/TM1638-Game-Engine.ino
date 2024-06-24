@@ -493,6 +493,7 @@ void loop() {
   // check if loste elsewhere
   if (digitalRead(lose_in) == HIGH) {
     alive = false;
+    final_display=0;
   }
   //continue game
   buttons = give_button_num();
