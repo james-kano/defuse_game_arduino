@@ -73,14 +73,12 @@ void safe() {
 void lose () {
   // Actions upon game lose
   digitalWrite(lose_sig_out, HIGH);
-}
+  digitalWrite(top, LOW);
+  digitalWrite(middle, LOW);
+  digitalWrite(bottom, LOW);
+  digitalWrite(high_rail, LOW);
+  digitalWrite(low_rail, LOW);
 
-
-bool check_mistakes() {
-  // Checks for disallowed mismatched wire states (mistakes)
-  bool mistake = false;
-  
-  return mistake;
 }
 
 void check_progress() {
@@ -91,25 +89,56 @@ void check_progress() {
       if (curr_pin_states[5] == 2 && curr_pin_states[1] == 2) {
         correct = true;
       }
+      else {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == 0) || (curr_pin_states[1] == 1 && allowed_mistakes[1] == 0)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
       break;
     case 1:
       if (curr_pin_states[5] == 2 && curr_pin_states[1] == 0) {
         correct = true;
       }
+      else {
+        if (curr_pin_states[5] == 1) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
       break;
     case 2:
       if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0) {
         correct = true;
+        Serial.println("Oops!");
+      }
+      else {
+        if (curr_pin_states[5] == 1 || curr_pin_states[1] == 2) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
       }
       break;
     case 3:
       if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0 && curr_pin_states[4] == 0) {
         correct = true;
       }
+      else {
+        if (curr_pin_states[5] == 1 || curr_pin_states[1] == 2) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
       break;
     case 4:
       if (curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[3] == 0 && curr_pin_states[4] == 2 && curr_pin_states[0] == 0) {
         correct = true;
+      }
+      else {
+        if (curr_pin_states[5] == 1 || curr_pin_states[1] == 2 || curr_pin_states[4] == 1) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
       }
       break;
   }
@@ -120,13 +149,6 @@ void check_progress() {
         int prev_pin_state = curr_pin_states[i];
       }
       progress ++;
-  }
-  else {
-    // check mistakes
-    bool mistake = check_mistakes();
-    if (mistake == true) {
-      mistake_count++;
-    }
   }
   Serial.print("Progress: ");
   Serial.println(progress);
@@ -180,16 +202,22 @@ void loop() {
   // check for wire change
   wire_change = false;
   for (int i=0; i<6; i++) {
-    int curr_pin_state = get_curr_pin_state(wires[i]);
-    int prev_pin_state = curr_pin_states[i];
-    if (curr_pin_state != prev_pin_state) {
-      wire_change = true;
-      curr_pin_states[i] = curr_pin_state;
-      Serial.print("A");
-      Serial.print(i);
-      Serial.print(": ");
-      Serial.println(curr_pin_state);
-      delay(100);
+    allowed_mistakes[i] = 1;
+  }
+  if (mistake_count < lose_count) {
+    for (int i=0; i<6; i++) {
+      int curr_pin_state = get_curr_pin_state(wires[i]);
+      int prev_pin_state = curr_pin_states[i];
+      if (curr_pin_state != prev_pin_state) {
+        wire_change = true;
+        curr_pin_states[i] = curr_pin_state;
+        allowed_mistakes[i] = 0;
+        Serial.print("A");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(curr_pin_state);
+        delay(100);
+      }
     }
   }
   if (wire_change == true && mistake_count < lose_count) {
