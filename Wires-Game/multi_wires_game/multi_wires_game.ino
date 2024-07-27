@@ -92,55 +92,55 @@ void check_progress_game_0() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[2] == 0) {
+      if (curr_pin_states[1] == 2) {
         correct = true;
       }
       else {
-        if () {
+        if ((curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 1:
-      if (curr_pin_states[2] == 0 && curr_pin_states[4] == 1) {
+      if (curr_pin_states[1] == 2 && curr_pin_states[5] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[4] == 2 && allowed_mistakes[4] == false)) {
+        if ((curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 2:
-      if (curr_pin_states[2] == 1 && curr_pin_states[4] == 1 && curr_pin_states[3] == 1) {
+      if (curr_pin_states[1] == 2 && curr_pin_states[5] == 0 && curr_pin_states[0] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
+        if ((curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 3:
-      if (curr_pin_states[2] == 1 && curr_pin_states[4] == 1 && curr_pin_states[3] == 1 && curr_pin_states[0] == 1) {
+      if (curr_pin_states[1] == 2 && curr_pin_states[5] == 1 && curr_pin_states[0] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
+        if ((curr_pin_states[1] == 1 && allowed_mistakes[1] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 4:
-      if (curr_pin_states[2] == 1 && curr_pin_states[4] == 1 && curr_pin_states[3] == 1 && curr_pin_states[0] == 1 && curr_pin_states[5] == 2 && curr_pin_states[1] == 2) {
+      if (curr_pin_states[1] == 1 && curr_pin_states[5] == 1 && curr_pin_states[0] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false) || (curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
+        if ((curr_pin_states[1] == 2 && allowed_mistakes[1] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
@@ -165,55 +165,49 @@ void check_progress_game_1() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[1] == 0) {
+      if (curr_pin_states[0] == 1) {
         correct = true;
       }
       else {
-        if () {
+        if ((curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 1:
-      if (curr_pin_states[1] == 0 && curr_pin_states[0] == 0 && curr_pin_states[2] == 2) {
+      if (curr_pin_states[0] == 0) {
         correct = true;
-      }
-      else {
-        if ((curr_pin_states[2] == 1 && allowed_mistakes[2] == false)) {
-          mistake_count++;
-          Serial.println("Oops!");
-        }
       }
       break;
     case 2:
-      if (curr_pin_states[1] == 0 && curr_pin_states[0] == 0 && curr_pin_states[2] == 1 && curr_pin_states[5] == 1) {
+      if (curr_pin_states[0] == 1 && curr_pin_states[3] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[0] == 2 && allowed_mistakes[0] == false) || (curr_pin_states[3] == 1 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 3:
-      if (curr_pin_states[1] == 2 && curr_pin_states[0] == 0 && curr_pin_states[2] == 1 && curr_pin_states[5] == 1 && curr_pin_states[3] == 0) {
+      if (curr_pin_states[0] == 0 && curr_pin_states[3] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[1] == 1 && allowed_mistakes[1] == false) || (curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 4:
-      if (curr_pin_states[1] == 1 && curr_pin_states[0] == 0 && curr_pin_states[2] == 1 && curr_pin_states[5] == 1 && curr_pin_states[3] == 0 && curr_pin_states[4] == 2) {
+      if (curr_pin_states[0] == 0 && curr_pin_states[3] == 1 && curr_pin_states[1] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[1] == 2 && allowed_mistakes[1] == false) || (curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
@@ -238,55 +232,55 @@ void check_progress_game_2() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[4] == 2) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[3] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 1:
-      if (curr_pin_states[4] == 0) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[3] == 1 && curr_pin_states[1] == 0) {
         correct = true;
       }
       else {
-        if () {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 2:
-      if (curr_pin_states[4] == 0 && curr_pin_states[5] == 1) {
+      if (curr_pin_states[5] == 1 && curr_pin_states[3] == 1 && curr_pin_states[1] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 3:
-      if (curr_pin_states[4] == 0 && curr_pin_states[5] == 2) {
+      if (curr_pin_states[5] == 1 && curr_pin_states[3] == 1 && curr_pin_states[1] == 0 && curr_pin_states[0] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 4:
-      if (curr_pin_states[4] == 0 && curr_pin_states[5] == 2 && curr_pin_states[0] == 1) {
+      if (curr_pin_states[5] == 2 && curr_pin_states[3] == 1 && curr_pin_states[1] == 0 && curr_pin_states[0] == 2 && curr_pin_states[2] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[2] == 2 && allowed_mistakes[2] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
@@ -311,55 +305,55 @@ void check_progress_game_3() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[3] == 2) {
+      if (curr_pin_states[0] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false)) {
+        if ((curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 1:
-      if (curr_pin_states[3] == 2 && curr_pin_states[5] == 1 && curr_pin_states[4] == 0) {
+      if (curr_pin_states[0] == 1 && curr_pin_states[4] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[0] == 2 && allowed_mistakes[0] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 2:
-      if (curr_pin_states[3] == 2 && curr_pin_states[5] == 1 && curr_pin_states[4] == 0 && curr_pin_states[2] == 0) {
+      if (curr_pin_states[0] == 2 && curr_pin_states[4] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[0] == 1 && allowed_mistakes[0] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 3:
-      if (curr_pin_states[3] == 2 && curr_pin_states[5] == 1 && curr_pin_states[4] == 0 && curr_pin_states[2] == 0 && curr_pin_states[0] == 0 && curr_pin_states[1] == 2) {
+      if (curr_pin_states[0] == 2 && curr_pin_states[4] == 2 && curr_pin_states[1] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
+        if ((curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 4:
-      if (curr_pin_states[3] == 2 && curr_pin_states[5] == 1 && curr_pin_states[4] == 0 && curr_pin_states[2] == 0 && curr_pin_states[0] == 1 && curr_pin_states[1] == 2) {
+      if (curr_pin_states[0] == 2 && curr_pin_states[4] == 0 && curr_pin_states[1] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false) || (curr_pin_states[1] == 1 && allowed_mistakes[1] == false)) {
+        if ((curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
@@ -384,55 +378,201 @@ void check_progress_game_4() {
   bool correct = false;
   switch (progress) {
     case 0:
-      if (curr_pin_states[2] == 2) {
+      if (curr_pin_states[3] == 1 && curr_pin_states[5] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 1 && allowed_mistakes[2] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 1 && allowed_mistakes[5] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 1:
-      if (curr_pin_states[2] == 1 && curr_pin_states[1] == 1) {
+      if (curr_pin_states[3] == 1 && curr_pin_states[5] == 2 && curr_pin_states[1] == 1) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 2:
-      if (curr_pin_states[2] == 1 && curr_pin_states[1] == 1 && curr_pin_states[5] == 1) {
+      if (curr_pin_states[3] == 1 && curr_pin_states[5] == 2 && curr_pin_states[1] == 1 && curr_pin_states[4] == 0 && curr_pin_states[0] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 3:
-      if (curr_pin_states[2] == 1 && curr_pin_states[1] == 1 && curr_pin_states[5] == 1 && curr_pin_states[0] == 1) {
+      if (curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 0 && curr_pin_states[4] == 0 && curr_pin_states[0] == 0) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false) || (curr_pin_states[5] == 2 && allowed_mistakes[5] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
       }
       break;
     case 4:
-      if (curr_pin_states[2] == 1 && curr_pin_states[1] == 0 && curr_pin_states[5] == 2 && curr_pin_states[0] == 1) {
+      if (curr_pin_states[3] == 1 && curr_pin_states[5] == 0 && curr_pin_states[1] == 0 && curr_pin_states[4] == 0 && curr_pin_states[0] == 2) {
         correct = true;
       }
       else {
-        if ((curr_pin_states[2] == 2 && allowed_mistakes[2] == false) || (curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false)) {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+  }
+  
+  if (correct == true) {
+      // set curr_pin_states
+      for (int i=0; i<6; i++) {
+        int curr_pin_state = get_curr_pin_state(wires[i]);
+        int prev_pin_state = curr_pin_states[i];
+      }
+      progress ++;
+  }
+  Serial.print("Progress: ");
+  Serial.println(progress);
+}
+
+void check_progress_game_5() {
+  // Checks the progress and increments if successful
+  bool correct = false;
+  switch (progress) {
+    case 0:
+      if (curr_pin_states[5] == 1) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[5] == 2 && allowed_mistakes[5] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 1:
+      if (curr_pin_states[5] == 2 && curr_pin_states[4] == 1) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 2:
+      if (curr_pin_states[5] == 2 && curr_pin_states[4] == 1 && curr_pin_states[1] == 0 && curr_pin_states[2] == 2) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false) || (curr_pin_states[2] == 1 && allowed_mistakes[2] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 3:
+      if (curr_pin_states[5] == 2 && curr_pin_states[4] == 1 && curr_pin_states[1] == 0 && curr_pin_states[2] == 2 && curr_pin_states[3] == 0) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false) || (curr_pin_states[2] == 1 && allowed_mistakes[2] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 4:
+      if (curr_pin_states[5] == 2 && curr_pin_states[4] == 1 && curr_pin_states[1] == 0 && curr_pin_states[2] == 0 && curr_pin_states[3] == 0) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[5] == 1 && allowed_mistakes[5] == false) || (curr_pin_states[4] == 2 && allowed_mistakes[4] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+  }
+  
+  if (correct == true) {
+      // set curr_pin_states
+      for (int i=0; i<6; i++) {
+        int curr_pin_state = get_curr_pin_state(wires[i]);
+        int prev_pin_state = curr_pin_states[i];
+      }
+      progress ++;
+  }
+  Serial.print("Progress: ");
+  Serial.println(progress);
+}
+
+void check_progress_game_6() {
+  // Checks the progress and increments if successful
+  bool correct = false;
+  switch (progress) {
+    case 0:
+      if (curr_pin_states[3] == 1 && curr_pin_states[0] == 2) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 1:
+      if (curr_pin_states[3] == 1 && curr_pin_states[0] == 2 && curr_pin_states[1] == 0 && curr_pin_states[4] == 2) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[3] == 2 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 2:
+      if (curr_pin_states[3] == 2 && curr_pin_states[0] == 2 && curr_pin_states[1] == 2 && curr_pin_states[4] == 2) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[1] == 1 && allowed_mistakes[1] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 3:
+      if (curr_pin_states[3] == 2 && curr_pin_states[0] == 2 && curr_pin_states[1] == 0 && curr_pin_states[4] == 2 && curr_pin_states[5] == 0) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 1 && allowed_mistakes[0] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
+          mistake_count++;
+          Serial.println("Oops!");
+        }
+      }
+      break;
+    case 4:
+      if (curr_pin_states[3] == 2 && curr_pin_states[0] == 1 && curr_pin_states[1] == 1 && curr_pin_states[4] == 2 && curr_pin_states[5] == 0) {
+        correct = true;
+      }
+      else {
+        if ((curr_pin_states[3] == 1 && allowed_mistakes[3] == false) || (curr_pin_states[0] == 2 && allowed_mistakes[0] == false) || (curr_pin_states[1] == 2 && allowed_mistakes[1] == false) || (curr_pin_states[4] == 1 && allowed_mistakes[4] == false)) {
           mistake_count++;
           Serial.println("Oops!");
         }
@@ -459,6 +599,8 @@ void setup() {
   ee_seed = analogRead(seed_pin);
   randomSeed(ee_seed);
   Serial.begin(9600);
+  Serial.print("ee_seed: ");
+  Serial.println(ee_seed);
   // set the current wire conditions
   for (int i=0; i<6; i++) {
     int curr_pin_state = get_curr_pin_state(wires[i]);
@@ -477,12 +619,13 @@ void setup() {
   digitalWrite(low_rail, LOW);
   // set the sequence indicator LEDs
 
-  game_select = random(5);
+  game_select = random(7);
+  Serial.println(game_select);
         
   switch(game_select) {
     case 0:
       pinMode(top, OUTPUT);
-      digitalWrite(top, HIGH);
+      digitalWrite(top, LOW);
       pinMode(middle, OUTPUT);
       digitalWrite(middle, HIGH);
       pinMode(bottom, OUTPUT);
@@ -492,33 +635,49 @@ void setup() {
       pinMode(top, OUTPUT);
       digitalWrite(top, HIGH);
       pinMode(middle, OUTPUT);
-      digitalWrite(middle, LOW);
-      pinMode(bottom, OUTPUT);
-      digitalWrite(bottom, LOW);
-      break;    
-    case 2:
-      pinMode(top, OUTPUT);
-      digitalWrite(top, LOW);
-      pinMode(middle, OUTPUT);
       digitalWrite(middle, HIGH);
       pinMode(bottom, OUTPUT);
       digitalWrite(bottom, HIGH);
+      break;    
+    case 2:
+      pinMode(top, OUTPUT);
+      digitalWrite(top, HIGH);
+      pinMode(middle, OUTPUT);
+      digitalWrite(middle, LOW);
+      pinMode(bottom, OUTPUT);
+      digitalWrite(bottom, LOW);
       break;    
     case 3:
       pinMode(top, OUTPUT);
       digitalWrite(top, HIGH);
       pinMode(middle, OUTPUT);
+      digitalWrite(middle, HIGH);
+      pinMode(bottom, OUTPUT);
+      digitalWrite(bottom, LOW);
+      break;    
+    case 4:
+      pinMode(top, OUTPUT);
+      digitalWrite(top, LOW);
+      pinMode(middle, OUTPUT);
       digitalWrite(middle, LOW);
       pinMode(bottom, OUTPUT);
       digitalWrite(bottom, HIGH);
       break;    
-    case 4:
+    case 5:
       pinMode(top, OUTPUT);
-      digitalWrite(top, HIGH);
+      digitalWrite(top, LOW);
       pinMode(middle, OUTPUT);
       digitalWrite(middle, HIGH);
       pinMode(bottom, OUTPUT);
       digitalWrite(bottom, LOW);
+      break;    
+    case 6:
+      pinMode(top, OUTPUT);
+      digitalWrite(top, HIGH);
+      pinMode(middle, OUTPUT);
+      digitalWrite(middle, LOW);
+      pinMode(bottom, OUTPUT);
+      digitalWrite(bottom, HIGH);
       break;
   }
         
@@ -577,6 +736,12 @@ void loop() {
         break;
       case 4:
         check_progress_game_4();
+        break;
+      case 5:
+        check_progress_game_5();
+        break;
+      case 6:
+        check_progress_game_6();
         break;
     }
         

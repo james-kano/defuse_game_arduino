@@ -438,7 +438,7 @@ int win_len = 0; // set in exec_game() fore each game.
 int final_display = 0;
 
 int num_games = 3;
-int game_select = 0;;
+int game_select = 0;
 int game_select_leds[3] = {1, 3, 7};
 
 int standby = 0;
