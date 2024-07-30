@@ -619,6 +619,7 @@ void setup() {
   digitalWrite(low_rail, LOW);
   // set the sequence indicator LEDs
 
+  game_select = random(7); // doesn't work for some reason
   game_select = random(7);
   Serial.println(game_select);
         
