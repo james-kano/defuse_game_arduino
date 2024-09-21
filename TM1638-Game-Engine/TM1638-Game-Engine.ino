@@ -10,7 +10,7 @@
 #define lose_sig 4
 #define win_in_wires 5
 
-#define seed_pin A0 // uses an analogue signal to set the random seed
+#define seed_pin A1 // uses an analogue signal to set the random seed
 
 TM1638 tm(CLK,DIO,STB);
 
@@ -438,7 +438,7 @@ int win_len = 0; // set in exec_game() fore each game.
 int final_display = 0;
 
 int num_games = 3;
-int game_select = 0;;
+int game_select = 0;
 int game_select_leds[3] = {1, 3, 7};
 
 int standby = 0;
@@ -446,6 +446,7 @@ int standby = 0;
 
 void setup() {
   // setup explode, defuse and coordination pins
+  pinMode(seed_pin, INPUT);
   pinMode(explode_pin, OUTPUT);
   pinMode(safe_pin, OUTPUT);
   pinMode(lose_sig, INPUT);
