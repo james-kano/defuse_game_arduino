@@ -83,7 +83,6 @@ void lose () {
   digitalWrite(bottom, LOW);
   digitalWrite(high_rail, LOW);
   digitalWrite(low_rail, LOW);
-  
 }
 
 
@@ -696,7 +695,7 @@ void setup() {
 void loop() {
   // Game loop
   // check if lost elsewhere
-  if (lose_sig_in == HIGH) {
+  if (digitalRead(lose_sig_in) == HIGH) {
     mistake_count == lose_count;
   }
   // check for wire change
