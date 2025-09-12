@@ -697,6 +697,8 @@ void loop() {
   // check if lost elsewhere
   if (digitalRead(lose_sig_in) == HIGH) {
     mistake_count == lose_count;
+    lose();
+    return;
   }
   // check for wire change
   wire_change = false;
