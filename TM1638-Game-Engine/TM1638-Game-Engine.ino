@@ -475,7 +475,7 @@ void setup() {
       buttons = give_button_num();
     }
     if (buttons != 0 || digitalRead(lose_sig) == HIGH) {
-      if (buttons == 64) {
+      if (buttons == 64 && digitalRead(lose_sig) == LOW) {
         standby++;
       }
       else {
