@@ -6,6 +6,9 @@
 venv
 .DS_Store
 
+POC
+POC/*
+POCs/*
 
 
 *drivers*
