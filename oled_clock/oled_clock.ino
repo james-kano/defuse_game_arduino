@@ -53,7 +53,7 @@ static const unsigned char PROGMEM logo_bmp[] = {
   0b00000000, 0b00110000
 };
 
-const int win_sig_pin = ;
+const int win_sig_pin = A2;
 const int lose_sig_pin = 11;
 bool lost = false;
 
@@ -84,13 +84,14 @@ int time_secs = 0;
 int time_secs_tens = 0;
 int time_secs_units = 0;
 
-int start_secs = 180; // 3 min
+int start_secs = 120; // 2 min
+// int start_secs = 180; // 3 min
 // int start_secs = 20; // 20 seconds
 
 void loop() {
 
   if (digitalRead(win_sig_pin) == HIGH) {
-    delay(5000)
+    delay(5000);
     display.clearDisplay();
     display.display();
     return;
