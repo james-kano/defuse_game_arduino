@@ -13,8 +13,7 @@
 
 
 const int win_sig_out = 10;
-const int lose_sig_out = 11;
-const int lose_sig_in = 12;
+const int lose_sig = 11;
 
 const int high_rail = 7;
 const int low_rail = 8;
@@ -77,13 +76,13 @@ void safe() {
 
 void lose () {
   // Actions upon game lose
-  digitalWrite(lose_sig_out, HIGH);
+  pinMode(lose_sig, OUTPUT);
+  digitalWrite(lose_sig, HIGH);
   digitalWrite(top, LOW);
   digitalWrite(middle, LOW);
   digitalWrite(bottom, LOW);
   digitalWrite(high_rail, LOW);
   digitalWrite(low_rail, LOW);
-  
 }
 
 
@@ -609,9 +608,7 @@ void setup() {
   // setup the win / lose signal wires
   pinMode(win_sig_out, OUTPUT);
   digitalWrite(win_sig_out, LOW);
-  pinMode(lose_sig_out, OUTPUT);
-  digitalWrite(lose_sig_out, LOW);
-  pinMode(lose_sig_in, INPUT);
+  pinMode(lose_sig, INPUT);
   // setup the rail pins;
   pinMode(high_rail, OUTPUT);
   digitalWrite(high_rail, LOW);
@@ -696,8 +693,10 @@ void setup() {
 void loop() {
   // Game loop
   // check if lost elsewhere
-  if (lose_sig_in == HIGH) {
+  if (digitalRead(lose_sig) == HIGH) {
     mistake_count == lose_count;
+    lose();
+    return;
   }
   // check for wire change
   wire_change = false;
