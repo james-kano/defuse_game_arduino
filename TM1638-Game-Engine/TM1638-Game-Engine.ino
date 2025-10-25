@@ -25,10 +25,10 @@
 #define CLK 11 // clock digital pin
 #define DIO 12 // data digital pin
 
-#define safe_pin 2
-#define explode_pin 3
+// #define safe_pin 2
+// #define explode_pin 3
 #define lose_sig 4
-#define win_in_wires 5
+// #define win_in_wires 5
 
 #define seed_pin A1 // uses an analogue signal to set the random seed
 
@@ -56,11 +56,12 @@ const int error[8] = {e, r, r, o_low, r, 0, 0, 0};
 
 
 void display_line(int _segs[]) {
-  for (int p=0; p<8; p++)
+  for (int p=0; p<8; p++) {
       tm.displayDig(7-p, _segs[p]);
+  }
 }
 
-byte flip_byte(byte c){
+byte flip_byte(byte c) {
   char r=0;
   for(byte i = 0; i < 8; i++){
     r <<= 1;
@@ -78,9 +79,10 @@ void roll(int _delay) {
   // roll animation (math)
   int current_bit = 1;
   for (int a=1; a<=5; a++) {
-    for (uint8_t p=0; p<8; p++)
+    for (uint8_t p=0; p<8; p++) {
       tm.displayDig(7-p, current_bit);
       delay(_delay);
+    }
     current_bit = current_bit << 1;
   }
 }
@@ -92,7 +94,7 @@ void wave(int _delay) {
   for (int a=1; a<=6; a++) {
     int digit = current_bit;
     
-    for (int p=0; p<8; p++){
+    for (int p=0; p<8; p++) {
       tm.displayDig(7-p, digit);
       digit = digit << 1;
       if (digit == 64) {
@@ -467,12 +469,12 @@ int standby = 0;
 void setup() {
   // setup explode, defuse and coordination pins
   pinMode(seed_pin, INPUT);
-  pinMode(explode_pin, OUTPUT);
-  pinMode(safe_pin, OUTPUT);
+  // pinMode(explode_pin, OUTPUT);
+  // pinMode(safe_pin, OUTPUT);
   pinMode(lose_sig, INPUT);
   pinMode(win_in_wires, INPUT);
-  digitalWrite(explode_pin, LOW);
-  digitalWrite(safe_pin, LOW);
+  // digitalWrite(explode_pin, LOW);
+  // digitalWrite(safe_pin, LOW);
 
   Serial.begin(9600);
   tm.reset();
