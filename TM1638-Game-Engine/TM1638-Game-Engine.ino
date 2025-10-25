@@ -25,10 +25,7 @@
 #define CLK 11 // clock digital pin
 #define DIO 12 // data digital pin
 
-// #define safe_pin 2
-// #define explode_pin 3
 #define lose_sig 4
-// #define win_in_wires 5
 
 #define seed_pin A1 // uses an analogue signal to set the random seed
 
@@ -149,7 +146,6 @@ void lose() {
   int lose[8] = {ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8],ints[8]};
   display_line(lose);
   tm.writeLeds(255);
-  digitalWrite(explode_pin, HIGH);
   pinMode(lose_sig, OUTPUT);
   digitalWrite(lose_sig, HIGH);
 }
@@ -469,12 +465,7 @@ int standby = 0;
 void setup() {
   // setup explode, defuse and coordination pins
   pinMode(seed_pin, INPUT);
-  // pinMode(explode_pin, OUTPUT);
-  // pinMode(safe_pin, OUTPUT);
   pinMode(lose_sig, INPUT);
-  pinMode(win_in_wires, INPUT);
-  // digitalWrite(explode_pin, LOW);
-  // digitalWrite(safe_pin, LOW);
 
   Serial.begin(9600);
   tm.reset();
@@ -540,9 +531,6 @@ void loop() {
         }
         display_line(safe);
         final_display++;
-      }
-      if (digitalRead(win_in_wires) == HIGH) {
-        digitalWrite(safe_pin, HIGH);
       }
     }
     else {

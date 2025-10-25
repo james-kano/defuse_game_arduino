@@ -57,24 +57,25 @@ static const unsigned char PROGMEM logo_bmp[] = {
   0b00000000, 0b00110000
 };
 
+
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
 
-// pins for inbound win signals from game modules
-//  - extend this array when adding more game modules
-#define win_sig_in_pins[] = {5, 6}
-const int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]));
-bool all_won = false;
-
-// #define win_sig_pin = A2;
-#define lose_sig_in_pin = 11;
+#define lose_sig_in_pin 11
 bool lost = false;
 
+// pins for inbound win signals from game modules
+//  - extend this array when adding more game modules
+const int win_sig_in_pins[] = {5, 6};
+int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]);
+bool all_won = false;
+
 // set the time allowed to complete the game
-#define start_secs = 120; // 2 min
+#define start_secs 120 // 2 min
 // #define start_secs = 180; // 3 min
 // #define start_secs = 20; // 20 seconds
+
 
 
 void win() {
@@ -84,6 +85,8 @@ void win() {
   delay(5000);
   display.clearDisplay();
   display.display();
+
+  digitalWrite(safe_led_pin, HIGH);
 }
 
 
@@ -96,6 +99,9 @@ void lose() {
 
   pinMode(lose_sig_in_pin, OUTPUT);
   digitalWrite(lose_sig_in_pin, HIGH);
+
+  digitalWrite(explode_led_pin, HIGH);
+
 }
 
 
@@ -157,16 +163,16 @@ void draw_remaining_bar(int remaining) {
 
 void setup() {
   // set up the pins for win / lose inbound signals
-  for (i=0; i<num_win_pins; i++) {
+  for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
   }
   pinMode(lose_sig_in_pin, INPUT);
 
   // set up the pins for win / lose effects
-  pinMode(explode_pin, OUTPUT);
-  pinMode(safe_pin, OUTPUT);
-  digitalWrite(explode_pin, LOW);
-  digitalWrite(safe_pin, LOW);
+  pinMode(explode_led_pin, OUTPUT);
+  pinMode(safe_led_pin, OUTPUT);
+  digitalWrite(explode_led_pin, LOW);
+  digitalWrite(safe_led_pin, LOW);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -196,7 +202,7 @@ void loop() {
 
   // check that all win_sig_in_pins are in win state
   num_won = 0;
-  for (i=0; i<num_win_pins; i++) {
+  for (int i=0; i<num_win_pins; i++) {
     if (digitalRead(win_sig_in_pins[i]) == HIGH) {
       num_won++;
     }
