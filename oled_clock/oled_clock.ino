@@ -5,6 +5,10 @@
  Adafruit official splash screen has been retained and can be displayed by
  uncommenting display lines in the setup.
 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ 
 /**************************************************************************
  Example for Monochrome OLEDs based on SSD1306 drivers code info:
   Written by Limor Fried/Ladyada for Adafruit Industries,
