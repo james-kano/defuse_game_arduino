@@ -71,88 +71,21 @@ bool all_won = false;
 #define lose_sig_in_pin = 11;
 bool lost = false;
 
+// set the time allowed to complete the game
+#define start_secs = 120; // 2 min
+// #define start_secs = 180; // 3 min
+// #define start_secs = 20; // 20 seconds
 
-void setup() {
-  // set up the pins for win / lose inbound signals
-  for (i=0; i<num_win_pins; i++) {
-    pinMode(win_sig_in_pins[i], INPUT);
-  }
-  pinMode(lose_sig_in_pin, INPUT);
 
-  // set up the pins for win / lose effects
-  pinMode(explode_pin, OUTPUT);
-  pinMode(safe_pin, OUTPUT);
-  digitalWrite(explode_pin, LOW);
-  digitalWrite(safe_pin, LOW);
-
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
-
-  // Uncomment to display the splash screen
-  // display.display();
-  // delay(2000);
-
-  // Clear the buffer
+void win() {
+  /*
+  Win game conditions
+  */
+  delay(5000);
   display.clearDisplay();
-
+  display.display();
 }
 
-int curr_secs = 0;
-int time_mins = 0;
-int time_secs = 0;
-int time_secs_tens = 0;
-int time_secs_units = 0;
-
-int num_won = 0;
-
-int start_secs = 120; // 2 min
-// int start_secs = 180; // 3 min
-// int start_secs = 20; // 20 seconds
-
-void loop() {
-
-  // check that all win_sig_in_pins are in win state
-  num_won = 0;
-  for (i=0; i<num_win_pins; i++) {
-    if (digitalRead(win_sig_in_pins[i]) == HIGH) {
-      num_won++;
-    }
-  }
-
-  // if all game modules won, win condition and exit loop
-  if (num_won == num_win_pins) {
-    delay(5000);
-    display.clearDisplay();
-    display.display();
-    return;
-  }
-
-  // calculate time remaining
-  curr_secs = start_secs - (millis() / 1000);
-
-  // if time runs out or lose signal, lose condition
-  if ((curr_secs < 0) || (digitalRead(lose_sig_in_pin) == HIGH)) {
-    lose();
-  }
-  // otherwise, update clock
-  else {
-    time_mins = curr_secs / 60;
-    time_secs = curr_secs % 60;
-    time_secs_tens = (curr_secs % 60) / 10;
-    time_secs_units = (curr_secs % 60) % 10;
-
-    display.clearDisplay();
-    draw_remaining_bar(curr_secs);
-    draw_time(time_mins, time_secs_tens, time_secs_units);
-
-    display.display();
-    delay(100);
-
-  }
-}
 
 void lose() {
   /*
@@ -219,5 +152,83 @@ void draw_remaining_bar(int remaining) {
     display.fillRoundRect(prop_lock - proportion, 0, proportion, 5, display.height()/4, SSD1306_INVERSE);
     display.fillRoundRect(prop_lock, 7, proportion, 5, display.height()/4, SSD1306_INVERSE);
   } 
+}
+
+
+void setup() {
+  // set up the pins for win / lose inbound signals
+  for (i=0; i<num_win_pins; i++) {
+    pinMode(win_sig_in_pins[i], INPUT);
+  }
+  pinMode(lose_sig_in_pin, INPUT);
+
+  // set up the pins for win / lose effects
+  pinMode(explode_pin, OUTPUT);
+  pinMode(safe_pin, OUTPUT);
+  digitalWrite(explode_pin, LOW);
+  digitalWrite(safe_pin, LOW);
+
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  // Uncomment to display the splash screen
+  // display.display();
+  // delay(2000);
+
+  // Clear the buffer
+  display.clearDisplay();
+
+}
+
+
+int curr_secs = 0;
+int time_mins = 0;
+int time_secs = 0;
+int time_secs_tens = 0;
+int time_secs_units = 0;
+
+int num_won = 0;
+
+void loop() {
+
+  // check that all win_sig_in_pins are in win state
+  num_won = 0;
+  for (i=0; i<num_win_pins; i++) {
+    if (digitalRead(win_sig_in_pins[i]) == HIGH) {
+      num_won++;
+    }
+  }
+
+  // if all game modules won, win condition and exit loop
+  if (num_won == num_win_pins) {
+    win();
+    return;
+  }
+
+  // calculate time remaining
+  curr_secs = start_secs - (millis() / 1000);
+
+  // if time runs out or lose signal, lose condition
+  if ((curr_secs < 0) || (digitalRead(lose_sig_in_pin) == HIGH)) {
+    lose();
+  }
+  // otherwise, update clock
+  else {
+    time_mins = curr_secs / 60;
+    time_secs = curr_secs % 60;
+    time_secs_tens = (curr_secs % 60) / 10;
+    time_secs_units = (curr_secs % 60) % 10;
+
+    display.clearDisplay();
+    draw_remaining_bar(curr_secs);
+    draw_time(time_mins, time_secs_tens, time_secs_units);
+
+    display.display();
+    delay(100);
+
+  }
 }
 
