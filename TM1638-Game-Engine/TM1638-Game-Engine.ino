@@ -79,8 +79,8 @@ void roll(int _delay) {
   for (int a=1; a<=5; a++) {
     for (uint8_t p=0; p<8; p++) {
       tm.displayDig(7-p, current_bit);
-      delay(_delay);
     }
+    delay(_delay);
     current_bit = current_bit << 1;
   }
 }
