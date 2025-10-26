@@ -26,6 +26,7 @@
 #define DIO 12 // data digital pin
 
 #define lose_sig 4
+#define win_sig 2
 
 #define seed_pin A1 // uses an analogue signal to set the random seed
 
@@ -463,9 +464,11 @@ int standby = 0;
 
 
 void setup() {
-  // setup explode, defuse and coordination pins
+  // setup win outbound signal and communal lose signal
   pinMode(seed_pin, INPUT);
   pinMode(lose_sig, INPUT);
+  pinMode(win_sig, OUTPUT);
+  digitalWrite(win_sig, LOW);
 
   Serial.begin(9600);
   tm.reset();
@@ -531,6 +534,7 @@ void loop() {
         }
         display_line(safe);
         final_display++;
+        digitalWrite(win_sig, HIGH);
       }
     }
     else {

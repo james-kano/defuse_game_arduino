@@ -67,7 +67,7 @@ bool lost = false;
 
 // pins for inbound win signals from game modules
 //  - extend this array when adding more game modules
-const int win_sig_in_pins[] = {5, 6};
+const int win_sig_in_pins[] = {4, 5};
 int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]);
 bool all_won = false;
 
@@ -96,9 +96,6 @@ void lose() {
   */
   display.clearDisplay();
   display.display();
-
-  pinMode(lose_sig_in_pin, OUTPUT);
-  digitalWrite(lose_sig_in_pin, HIGH);
 
   digitalWrite(explode_led_pin, HIGH);
 
