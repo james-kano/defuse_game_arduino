@@ -62,7 +62,7 @@ static const unsigned char PROGMEM logo_bmp[] = {
 #define safe_led_pin 2
 #define explode_led_pin 3
 
-#define lose_sig_in_pin 11
+#define lose_sig_pin 11
 bool lost = false;
 
 // pins for inbound win signals from game modules
@@ -96,6 +96,9 @@ void lose() {
   */
   display.clearDisplay();
   display.display();
+
+  pinMode(lose_sig_pin, OUTPUT);
+  digitalWrite(lose_sig_pin, HIGH);
 
   digitalWrite(explode_led_pin, HIGH);
 
@@ -163,7 +166,7 @@ void setup() {
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
   }
-  pinMode(lose_sig_in_pin, INPUT);
+  pinMode(lose_sig_pin, INPUT);
 
   // set up the pins for win / lose effects
   pinMode(explode_led_pin, OUTPUT);
@@ -215,7 +218,7 @@ void loop() {
   curr_secs = start_secs - (millis() / 1000);
 
   // if time runs out or lose signal, lose condition
-  if ((curr_secs < 0) || (digitalRead(lose_sig_in_pin) == HIGH)) {
+  if ((curr_secs < 0) || (digitalRead(lose_sig_pin) == HIGH)) {
     lose();
   }
   // otherwise, update clock
