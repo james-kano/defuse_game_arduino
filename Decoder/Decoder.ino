@@ -28,6 +28,21 @@
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define button_read_pin A0
 
+#define num_menu_items 4
+String menu_items[num_menu_items] = {
+//"                " allowed max length
+  "1 Wire sequencer",
+  "2 Repair display",
+  "3 Quash overload",
+  "4 Passcode      "
+};
+
+
+  // -----------------------------//
+ //         SCREEN FUNCS         //
+// -----------------------------//
+
+
 void clear_display() {
   lcd.setCursor(0, 0);
   lcd.print("                ");
@@ -77,21 +92,56 @@ void output_buttons() {
 }
 
 
-int cursor_x = 0;
-int cursor_y = 0;
+  // -----------------------------//
+ //            GAMES             //
+// -----------------------------//
 
-void set_cursor() {
-  if (button == "l") cursor_x -= 1;
-  if (button == "r") cursor_x += 1;
-  if (button == "d") cursor_y += 1;
-  if (button == "u") cursor_y -= 1;
-  
-  // prevent curosor moving off screen
-  if (cursor_x < 0) cursor_x = 0;
-  if (cursor_y < 0) cursor_y = 0;
-  if (cursor_x > 15) cursor_x = 15;
-  if (cursor_y > 1) cursor_y = 1;
+
+void wire_sequencer() {
+  /*
+  Provides instructions for the wiring interface
+  Logic: instructions match the defusing sequence produced by the Generate_wires_game
+  notebook.
+  */
 }
+
+
+void repair_display() {
+  /*
+  Fixes a glitching clock display.
+  Logic: press the 'select' button
+  */
+  if (button == "s") {
+
+  }
+}
+
+
+int qo_start_millis = 0;
+
+void quash_overload() {
+  /*
+  Prevents overload causing early device triggering.
+  Logic: hold the select button for the required length of time
+  */
+  if (rd_start_millis == 0) rd_start_millis = millis();
+  curr_secs = start_secs - (millis() / 1000);
+
+}
+
+
+void passcode() {
+/*
+Input the directional passcode to unlock the device
+Logic: Match the directional sequence on screen
+*/
+
+}
+
+
+  // -----------------------------//
+ //          MAIN LOOP           //
+// -----------------------------//
 
 
 void setup(){
@@ -99,13 +149,53 @@ void setup(){
 }
 
 
-void loop() {
-  if (can_read_buttons() == true) {
-    clear_display();
-    set_cursor();
-    lcd.setCursor(cursor_x, cursor_y);
-    lcd.print(button);
+bool in_menu = true;
+int menu_pos = 0;
+bool splash = true;
 
-    actioned_button = true;
+void loop() {
+  if (splash == true) {
+    lcd.setCursor(0, 0);
+    lcd.print("--- Decoder ---");
   }
+  if (can_read_buttons() == false) return;
+  clear_display();
+
+  if (in_menu == true) {
+    // action if up / down button
+    if (button == "u") menu_pos -= 1;
+    if (menu_pos < 0) menu_pos = 0;
+    if (button == "d") menu_pos += 1;
+    if (menu_pos > num_menu_items - 1) menu_pos = num_menu_items - 1;
+    if (splash == true) {
+      splash = false;
+      menu_pos = 0;
+    }
+
+    // display the menu item
+    lcd.setCursor(0, 0);
+    lcd.print("Menu:");
+    lcd.setCursor(0, 1);
+    lcd.print(menu_items[menu_pos]);
+
+    if (button == "s") in_menu = false;
+  }
+  else {
+    switch (menu_pos) {
+      case 0:
+        wire_sequencer();
+        break;
+      case 1:
+        repair_display();
+        break;
+      case 2:
+        quash_overload();
+        break;
+      case 3:
+        passcode();
+        break;
+    }
+  }
+
+  actioned_button = true;
 }
