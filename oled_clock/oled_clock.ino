@@ -58,6 +58,8 @@ static const unsigned char PROGMEM logo_bmp[] = {
 };
 
 
+#define DECODER_ADDRESS 0x1A
+
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
@@ -101,6 +103,25 @@ void lose() {
 
   digitalWrite(explode_led_pin, HIGH);
 
+}
+
+void send_to_decoder(int data_num) {
+  /*
+  Transmit data to the decoder
+  */
+  Wire.beginTransmission(DECODER_ADDRESS);
+  Wire.write(data_num); 
+  Wire.endTransmission();
+}
+
+int request_decode_event(int response_len) {
+  Wire.requestFrom(DECODER_ADDRESS, response_len);
+  //>>>>>>>>>>>
+  while(Wire.available()) {   // slave may send less than requested
+    char c = Wire.read();    // receive a byte as character
+    Serial.print(c);
+  }
+    //>>>>>>>>>>>
 }
 
 
@@ -161,6 +182,8 @@ void draw_remaining_bar(int remaining) {
 
 
 void setup() {
+  // Wire.onReceive(recieve_decode_event);
+
   // set up the pins for win / lose inbound signals
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
