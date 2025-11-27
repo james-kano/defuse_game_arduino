@@ -75,8 +75,9 @@ int button_val = 1023;
 String button = " ";
 String button_default = " ";
 bool actioned_button = false;
+bool force_read = false;
 
-bool can_read_buttons() {
+bool can_read_buttons(bool _force_read) {
   /*
   Logic for handling single press only, thenrelease bfore next press
   */
@@ -87,6 +88,7 @@ bool can_read_buttons() {
   else {
     if (actioned_button == false) return true;
   }
+  if (_force_read == true) return true;
   return false;
 }
 
@@ -157,9 +159,11 @@ void repair_display() {
 }
 
 
-int qo_start_millis = 0;
+int qo_start_secs = 0;
+int elapsed_secs = 0;
+bool qo_success = false;
 
-void quash_overload() {
+bool quash_overload() {
   /*
   Prevents overload causing early device triggering.
   Logic: hold the select button for the required length of time
@@ -167,10 +171,29 @@ void quash_overload() {
   lcd.setCursor(0, 0);
   lcd.print("Hold select!");
 
-
-  if (qo_start_millis == 0) qo_start_millis = millis();
-  // curr_secs = start_secs - (millis() / 1000);
+  if (qo_start_secs == 0) qo_start_secs = millis() / 1000;
+  if (button == "s") {
+    elapsed_secs = (millis() / 1000) - qo_start_secs;
+    lcd.setCursor(0, 1);
+    // create loading bar
+    for (int i=0; i<elapsed_secs; i++) {
+      lcd.print(char(0));
+      if (i == 16) {
+        //success state
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ToDo: add success comms here!
+        return true;
+      }
+    }
+  }
+  else {
+    qo_start_secs = 0;
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
+  }
   // use char(1) or char(0)
+  delay(500);
+
+  return false;
 }
 
 
@@ -195,6 +218,7 @@ void setup(){
 
 bool in_menu = true;
 bool splash = true;
+bool hold_clear_display = false;
 int menu_pos = 0;
 
 void loop() {
@@ -202,10 +226,11 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("--- Decoder ---");
   }
-  if (can_read_buttons() == false) return;
-  clear_display();
+  if (can_read_buttons(force_read) == false) return;
+  if (hold_clear_display == false) clear_display();
 
   if (in_menu == true) {
+    clear_display();
     // action if up / down button
     if (button == "u") menu_pos -= 1;
     if (menu_pos < 0) menu_pos = 0;
@@ -232,7 +257,14 @@ void loop() {
         display_menu(menu_pos, true);
         break;
       case 2:
-        quash_overload();
+        hold_clear_display = true;
+        force_read = true;
+        in_menu = quash_overload();
+        if (in_menu == true) {
+          hold_clear_display = false;
+          force_read = false;
+          display_menu(menu_pos, true);
+        }
         break;
       case 3:
         passcode();
