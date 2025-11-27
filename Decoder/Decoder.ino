@@ -30,12 +30,13 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 #define num_menu_items 4
 String menu_items[num_menu_items] = {
-//"                " allowed max length
-  "1 Wire sequencer",
-  "2 Repair display",
-  "3 Quash overload",
-  "4 Passcode      "
+//"              " allowed max length (14)
+  "Wire sequencer",
+  "Repair display",
+  "Quash overload",
+  "Passcode      "
 };
+
 
 
   // -----------------------------//
@@ -44,10 +45,29 @@ String menu_items[num_menu_items] = {
 
 
 void clear_display() {
+  /*
+  Clears the display
+  */
   lcd.setCursor(0, 0);
   lcd.print("                ");
   lcd.setCursor(0, 1);
   lcd.print("                ");
+}
+
+
+void display_menu(int _menu_pos, bool _clear_display = false) {
+  /*
+  displays the menu in required item position
+  */
+  if (_clear_display == true) {
+    clear_display();
+  }
+
+  lcd.setCursor(0, 0);
+  lcd.print("Menu:");
+  lcd.setCursor(0, 1);
+  lcd.print(String(_menu_pos+1) + " ");
+  lcd.print(menu_items[_menu_pos]);
 }
 
 
@@ -103,17 +123,37 @@ void wire_sequencer() {
   Logic: instructions match the defusing sequence produced by the Generate_wires_game
   notebook.
   */
+
 }
 
+
+String binary_string = "";
 
 void repair_display() {
   /*
   Fixes a glitching clock display.
   Logic: press the 'select' button
   */
-  if (button == "s") {
+  randomSeed(millis());
 
+  lcd.setCursor(0, 0);
+  lcd.print("Compiling...");
+  for (int l=0; l<50; l++) {
+    for (int i=0; i<16; i++) {
+      binary_string += String(random(0,2));
+    }
+    lcd.setCursor(0, 1);
+    lcd.print(binary_string);
+    delay(100);
+    binary_string = "";
   }
+  clear_display();
+  lcd.setCursor(0, 0);
+  lcd.print("Uploading...");
+  delay(2000);
+  lcd.print("Done");
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ToDo: add success comms here!
+  delay(1500);
 }
 
 
@@ -124,9 +164,13 @@ void quash_overload() {
   Prevents overload causing early device triggering.
   Logic: hold the select button for the required length of time
   */
-  if (rd_start_millis == 0) rd_start_millis = millis();
-  curr_secs = start_secs - (millis() / 1000);
+  lcd.setCursor(0, 0);
+  lcd.print("Hold select!");
 
+
+  if (qo_start_millis == 0) qo_start_millis = millis();
+  // curr_secs = start_secs - (millis() / 1000);
+  // use char(1) or char(0)
 }
 
 
@@ -150,8 +194,8 @@ void setup(){
 
 
 bool in_menu = true;
-int menu_pos = 0;
 bool splash = true;
+int menu_pos = 0;
 
 void loop() {
   if (splash == true) {
@@ -173,10 +217,7 @@ void loop() {
     }
 
     // display the menu item
-    lcd.setCursor(0, 0);
-    lcd.print("Menu:");
-    lcd.setCursor(0, 1);
-    lcd.print(menu_items[menu_pos]);
+    display_menu(menu_pos);
 
     if (button == "s") in_menu = false;
   }
@@ -187,6 +228,8 @@ void loop() {
         break;
       case 1:
         repair_display();
+        in_menu = true;
+        display_menu(menu_pos, true);
         break;
       case 2:
         quash_overload();
@@ -194,6 +237,11 @@ void loop() {
       case 3:
         passcode();
         break;
+      default:
+        lcd.setCursor(0, 0);
+        lcd.print("Unsupported");
+        lcd.setCursor(0, 1);
+        lcd.print("menu item!");
     }
   }
 
