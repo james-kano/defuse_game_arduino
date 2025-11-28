@@ -160,7 +160,7 @@ void repair_display() {
 
 
 int qo_start_secs = 0;
-int elapsed_secs = 0;
+int elapsed_half_secs = 0;
 bool qo_success = false;
 
 bool quash_overload() {
@@ -171,16 +171,23 @@ bool quash_overload() {
   lcd.setCursor(0, 0);
   lcd.print("Hold select!");
 
-  if (qo_start_secs == 0) qo_start_secs = millis() / 1000;
+  if (qo_start_secs == 0) qo_start_secs = millis() / 500;
   if (button == "s") {
-    elapsed_secs = (millis() / 1000) - qo_start_secs;
+    elapsed_half_secs = (millis() / 500) - qo_start_secs;
     lcd.setCursor(0, 1);
     // create loading bar
-    for (int i=0; i<elapsed_secs; i++) {
+    for (int i=0; i<elapsed_half_secs; i++) {
       lcd.print(char(0));
       if (i == 16) {
         //success state
         // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ToDo: add success comms here!
+        lcd.setCursor(0, 0);
+        lcd.print("Done            ");
+        lcd.setCursor(0, 1);
+        lcd.print("                ");
+        delay(1500);
+        qo_start_secs = 0;
+        elapsed_half_secs = 0;
         return true;
       }
     }
@@ -229,7 +236,7 @@ void loop() {
   if (can_read_buttons(force_read) == false) return;
   if (hold_clear_display == false) clear_display();
 
-  if (in_menu == true) {
+  if (in_menu == true & button != "s") {
     clear_display();
     // action if up / down button
     if (button == "u") menu_pos -= 1;
@@ -243,10 +250,9 @@ void loop() {
 
     // display the menu item
     display_menu(menu_pos);
-
-    if (button == "s") in_menu = false;
   }
   else {
+    in_menu = false;
     switch (menu_pos) {
       case 0:
         wire_sequencer();
