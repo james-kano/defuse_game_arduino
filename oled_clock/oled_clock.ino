@@ -118,12 +118,12 @@ void send_to_decoder(int _data_num) {
 }
 
 
-String request_decode_event(int _response_len) {
+String request_decode_event() {
   /*
   Request data from the decoder
   */
   String _data_in = "";
-  Wire.requestFrom(DECODER_ADDRESS, _response_len);
+  Wire.requestFrom(DECODER_ADDRESS);
   while(Wire.available()) {   // slave may send less than requested
     char c = Wire.read();    // receive a byte as character
     _data_in.concat(c);
@@ -244,11 +244,7 @@ void loop() {
 
   // see if data available on the I2C bus
   if (digitalRead(ping_in_pin) == HIGH) {
-    Wire.requestFrom(DECODER_ADDRESS, 3);
-    while(Wire.available()) {
-      char c = Wire.read();
-      i2c_data_in.concat(c);
-    }
+    i2c_data_in = request_decode_event();
   }
 
   // calculate time remaining
