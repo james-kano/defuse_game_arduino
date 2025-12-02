@@ -22,12 +22,20 @@
 
 /**************************************************************************/
 
-
 #include <LiquidCrystal.h>
+#include <Wire.h>
 
+// liquid crystal
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 #define button_read_pin A0
 
+// communications
+#define ping_pin A3 // additional wire allows slave to signal the master for data collection.
+#define DECODER_ADDRESS 0x1A
+String data_to_send = "  ";
+int data_received = -1;
+
+// logic
 #define num_menu_items 4
 String menu_items[num_menu_items] = {
 //"              " allowed max length (14)
@@ -37,6 +45,40 @@ String menu_items[num_menu_items] = {
   "Passcode      "
 };
 
+
+  // -----------------------------//
+ //            COMMS             //
+// -----------------------------//
+
+
+void receive_event(int howMany) {
+  /*
+  Handler for receiving data from I2C master
+  */
+  // reset the ping line
+  digitalWrite(ping_pin, LOW);
+  pinMode(ping_pin, INPUT);
+
+  while(Wire.available()) { 
+    data_received = Wire.read();
+  }
+}
+
+void request_event() {
+  /*
+  Handler for sending data to I2C master upon request
+  */
+  Wire.write(data_to_send.c_str());
+}
+
+void ping_data_ready(String _data) {
+  /*
+  Readies the data to be sent and signals I2C master to collect data
+  */
+  data_to_send = _data;
+  pinMode(ping_pin, OUTPUT);
+  digitalWrite(ping_pin, HIGH);
+}
 
 
   // -----------------------------//
@@ -152,9 +194,10 @@ void repair_display() {
   clear_display();
   lcd.setCursor(0, 0);
   lcd.print("Uploading...");
+  ping_data_ready("2w ");
+
   delay(2000);
   lcd.print("Done");
-  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ToDo: add success comms here!
   delay(1500);
 }
 
@@ -180,7 +223,7 @@ bool quash_overload() {
       lcd.print(char(0));
       if (i == 16) {
         //success state
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ToDo: add success comms here!
+        ping_data_ready("3w ");
         lcd.setCursor(0, 0);
         lcd.print("Done            ");
         lcd.setCursor(0, 1);
@@ -220,6 +263,10 @@ Logic: Match the directional sequence on screen
 
 void setup(){
     lcd.begin(16, 2);
+    pinMode(ping_pin, INPUT);
+    Wire.begin(DECODER_ADDRESS);
+    Wire.onReceive(receive_event);
+    Wire.onRequest(request_event);
 }
 
 
