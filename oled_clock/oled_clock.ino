@@ -91,40 +91,6 @@ void win() {
 }
 
 
-void lose() {
-  /*
-  Lose game conditions
-  */
-  display.clearDisplay();
-  display.display();
-
-  pinMode(lose_sig_pin, OUTPUT);
-  digitalWrite(lose_sig_pin, HIGH);
-
-  digitalWrite(explode_led_pin, HIGH);
-
-}
-
-void send_to_decoder(int data_num) {
-  /*
-  Transmit data to the decoder
-  */
-  Wire.beginTransmission(DECODER_ADDRESS);
-  Wire.write(data_num); 
-  Wire.endTransmission();
-}
-
-int request_decode_event(int response_len) {
-  Wire.requestFrom(DECODER_ADDRESS, response_len);
-  //>>>>>>>>>>>
-  while(Wire.available()) {   // slave may send less than requested
-    char c = Wire.read();    // receive a byte as character
-    Serial.print(c);
-  }
-    //>>>>>>>>>>>
-}
-
-
 int cursor_vert_2 = 20;
 int x_offset = 3;
 
@@ -182,8 +148,6 @@ void draw_remaining_bar(int remaining) {
 
 
 void setup() {
-  // Wire.onReceive(recieve_decode_event);
-
   // set up the pins for win / lose inbound signals
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
