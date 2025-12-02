@@ -58,6 +58,10 @@ static const unsigned char PROGMEM logo_bmp[] = {
 };
 
 
+#define DECODER_ADDRESS 0x1A
+#define ping_in_pin A3 // this pin allows I2C slave to signal for data request
+String i2c_data_in = ""
+
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
@@ -101,6 +105,30 @@ void lose() {
 
   digitalWrite(explode_led_pin, HIGH);
 
+}
+
+
+void send_to_decoder(int _data_num) {
+  /*
+  Transmit data to the decoder
+  */
+  Wire.beginTransmission(DECODER_ADDRESS);
+  Wire.write(_data_num); 
+  Wire.endTransmission();
+}
+
+
+String request_decode_event(int _response_len) {
+  /*
+  Request data from the decoder
+  */
+  String _data_in = "";
+  Wire.requestFrom(DECODER_ADDRESS, _response_len);
+  while(Wire.available()) {   // slave may send less than requested
+    char c = Wire.read();    // receive a byte as character
+    _data_in.concat(c);
+  }
+  return _data_in;
 }
 
 
@@ -161,6 +189,8 @@ void draw_remaining_bar(int remaining) {
 
 
 void setup() {
+  pinMode(ping_in_pin, INPUT);
+
   // set up the pins for win / lose inbound signals
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
@@ -206,11 +236,19 @@ void loop() {
       num_won++;
     }
   }
-
   // if all game modules won, win condition and exit loop
   if (num_won == num_win_pins) {
     win();
     return;
+  }
+
+  // see if data available on the I2C bus
+  if (digitalRead(ping_in_pin) == HIGH) {
+    Wire.requestFrom(DECODER_ADDRESS, 3);
+    while(Wire.available()) {
+      char c = Wire.read();
+      i2c_data_in.concat(c);
+    }
   }
 
   // calculate time remaining
