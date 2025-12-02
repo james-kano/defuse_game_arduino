@@ -58,8 +58,6 @@ static const unsigned char PROGMEM logo_bmp[] = {
 };
 
 
-#define DECODER_ADDRESS 0x1A
-
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
@@ -88,6 +86,21 @@ void win() {
   display.display();
 
   digitalWrite(safe_led_pin, HIGH);
+}
+
+
+void lose() {
+  /*
+  Lose game conditions
+  */
+  display.clearDisplay();
+  display.display();
+
+  pinMode(lose_sig_pin, OUTPUT);
+  digitalWrite(lose_sig_pin, HIGH);
+
+  digitalWrite(explode_led_pin, HIGH);
+
 }
 
 
