@@ -36,13 +36,14 @@ String data_to_send = "  ";
 int data_received = -1;
 
 // logic
-#define num_menu_items 4
+#define num_menu_items 5
 String menu_items[num_menu_items] = {
 //"              " allowed max length (14)
   "Wire sequencer",
   "Repair display",
   "Quash overload",
-  "Passcode      "
+  "Passcode      ",
+  "Show all ascii"
 };
 
 
@@ -167,7 +168,6 @@ void wire_sequencer() {
   Logic: instructions match the defusing sequence produced by the Generate_wires_game
   notebook.
   */
-
 }
 
 
@@ -184,7 +184,7 @@ void repair_display() {
   lcd.print("Compiling...");
   for (int l=0; l<50; l++) {
     for (int i=0; i<16; i++) {
-      binary_string += String(random(0,2));
+      binary_string += String(random(0, 2));
     }
     lcd.setCursor(0, 1);
     lcd.print(binary_string);
@@ -194,7 +194,7 @@ void repair_display() {
   clear_display();
   lcd.setCursor(0, 0);
   lcd.print("Uploading...");
-  ping_data_ready("2w ");
+  ping_data_ready("2w "); //send back to connected device
 
   delay(2000);
   lcd.print("Done");
@@ -223,12 +223,13 @@ bool quash_overload() {
       lcd.print(char(0));
       if (i == 16) {
         //success state
-        ping_data_ready("3w ");
+        ping_data_ready("3w ");  //send back to connected device
         lcd.setCursor(0, 0);
         lcd.print("Done            ");
         lcd.setCursor(0, 1);
         lcd.print("                ");
         delay(1500);
+        //reset the function to run again if selected
         qo_start_secs = 0;
         elapsed_half_secs = 0;
         return true;
@@ -247,12 +248,89 @@ bool quash_overload() {
 }
 
 
-void passcode() {
+int password_len = 16;
+String password = "";
+String password_buttons = "";
+String arrows[4] = {"<", ">", "^", "v"};
+String arrow_buttons[4] = {"l", "r", "u", "d"};
+int progress = -1;
+
+bool passcode() {
 /*
 Input the directional passcode to unlock the device
 Logic: Match the directional sequence on screen
 */
+  // generate password sequence if not generated
+  if (progress == -1) {
+    randomSeed(millis());
+    for (int i=0; i<password_len; i++) {
+      int password_val = random(0, 4);
+      password += arrows[password_val];
+      password_buttons += arrow_buttons[password_val];
+    }
+    progress = 0;
+    button = " ";
+  }
+  lcd.setCursor(0, 0);
+  lcd.print(password);
+  // check the progress
+  if (String(button) == String(password_buttons[progress])) progress++;
+  else {
+    if (button != " ") {
+      lcd.setCursor(0, 1);
+      lcd.print("Error!          ");
+      delay(1500);
+      lcd.setCursor(0, 0);
+      lcd.print(password);
+      progress = 0;
+    }
+  }
+  // display the progress
+  String progress_string = "";
+  for (int i=0; i<password_len+1; i++) {
+    if (i < progress) progress_string += char(255);
+    else progress_string += " ";
+  }
+  lcd.setCursor(0, 1);
+  delay(100);
+  lcd.print(progress_string);
 
+  if (progress == password_len){
+    ping_data_ready("4w ");  //send back to connected device
+    delay(500);
+    lcd.setCursor(0, 0);
+    lcd.print("Success!        ");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
+    delay(1500);
+    return true;
+  }
+  return false;
+}
+
+
+int place = 0;
+
+void show_ascii() {
+  /*
+  Displays all ascii characters showable by the display
+  */
+String ascii = "";
+  for (int i=place; i<place+16; i++) {
+    ascii += char(i);
+  }
+  lcd.setCursor(0, 0);
+  lcd.print(place);
+  lcd.setCursor(0, 1);
+  lcd.print(ascii);
+
+  if (button == "d" & place < 256) {
+    place += 16;
+  }
+  if (button == "u"){
+    place -= 16;
+    if (place < 0) place = 0;
+  }
 }
 
 
@@ -320,7 +398,16 @@ void loop() {
         }
         break;
       case 3:
-        passcode();
+        hold_clear_display = true;
+        in_menu = passcode();
+        if (in_menu == true) {
+          hold_clear_display = false;
+          force_read = false;
+          display_menu(menu_pos, true);
+        }
+        break;
+      case 4:
+        show_ascii();
         break;
       default:
         lcd.setCursor(0, 0);
