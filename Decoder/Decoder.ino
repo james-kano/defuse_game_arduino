@@ -276,7 +276,7 @@ Logic: Match the directional sequence on screen
   // check the progress
   if (String(button) == String(password_buttons[progress])) progress++;
   else {
-    if (button != " ") {
+    if (button != " " & button != "s") {
       lcd.setCursor(0, 1);
       lcd.print("Error!          ");
       delay(1500);
@@ -303,6 +303,10 @@ Logic: Match the directional sequence on screen
     lcd.setCursor(0, 1);
     lcd.print("                ");
     delay(1500);
+    //reset function
+    progress = -1;
+    password = "";
+    password_buttons = "";
     return true;
   }
   return false;
