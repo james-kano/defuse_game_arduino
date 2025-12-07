@@ -274,16 +274,6 @@ Logic: Match the directional sequence on screen
     lcd.setCursor(0, 0);
     lcd.print("Decrypting...   ");
     // animation for whole line
-    // for (int l=0; l<20; l++) {
-    //   String decrypt_string = "";
-    //   for (int i=0; i<16; i++) {
-    //     decrypt_string += String(char(random(33, 48)));
-    //   }
-    //   lcd.setCursor(0, 1);
-    //   lcd.print(decrypt_string);
-    //   delay(200);
-    // }
-    // animation for whole line (alternate)
     for (int i=0; i<16; i++) {
       lcd.setCursor(i, 1);
       lcd.print(String(char(random(33, 48))));
