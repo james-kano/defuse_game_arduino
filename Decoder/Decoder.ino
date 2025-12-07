@@ -270,6 +270,36 @@ Logic: Match the directional sequence on screen
     }
     progress = 0;
     button = " ";
+    // display start code
+    lcd.setCursor(0, 0);
+    lcd.print("Decrypting...   ");
+    // animation for whole line
+    // for (int l=0; l<20; l++) {
+    //   String decrypt_string = "";
+    //   for (int i=0; i<16; i++) {
+    //     decrypt_string += String(char(random(33, 48)));
+    //   }
+    //   lcd.setCursor(0, 1);
+    //   lcd.print(decrypt_string);
+    //   delay(200);
+    // }
+    // animation for whole line (alternate)
+    for (int i=0; i<16; i++) {
+      lcd.setCursor(i, 1);
+      lcd.print(String(char(random(33, 48))));
+      delay(200);
+    }
+    // animation for decrypting each symbol
+    for (int i=0; i<16; i++) { // second loop scrolls individual letters and moves along
+      for (int j=0; j<5; j++) {
+        lcd.setCursor(i, 1);
+        lcd.print(String(char(random(33, 48))));
+        delay(100);
+      }
+      lcd.setCursor(i, 1);
+      lcd.print(password[i]);
+    }
+    delay(200);
   }
   lcd.setCursor(0, 0);
   lcd.print(password);
@@ -289,7 +319,10 @@ Logic: Match the directional sequence on screen
   String progress_string = "";
   for (int i=0; i<password_len+1; i++) {
     if (i < progress) progress_string += char(255);
-    else progress_string += " ";
+    else {
+      if (i == progress) progress_string += char(95);
+      else progress_string += " ";
+    }
   }
   lcd.setCursor(0, 1);
   delay(100);
