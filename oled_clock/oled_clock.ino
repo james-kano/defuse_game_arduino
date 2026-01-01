@@ -60,7 +60,7 @@ static const unsigned char PROGMEM logo_bmp[] = {
 
 #define DECODER_ADDRESS 0x1A
 #define ping_in_pin A3 // this pin allows I2C slave to signal for data request
-String i2c_data_in = ""
+String i2c_data_in = "";
 
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
@@ -71,14 +71,16 @@ bool lost = false;
 
 // pins for inbound win signals from game modules
 //  - extend this array when adding more game modules
-const int win_sig_in_pins[] = {4, 5};
+const int win_sig_in_pins[2] = {4, 5};
 int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]);
 bool all_won = false;
 
 // set the time allowed to complete the game
-#define start_secs 120 // 2 min
-// #define start_secs = 180; // 3 min
-// #define start_secs = 20; // 20 seconds
+// #define start_secs 120 // 2 min
+#define start_secs 180 // 3 min
+// #define start_secs 20 // 20 seconds
+
+int num_glitches = 3;
 
 
 void win() {
@@ -123,7 +125,7 @@ String request_decode_event() {
   Request data from the decoder
   */
   String _data_in = "";
-  Wire.requestFrom(DECODER_ADDRESS);
+  Wire.requestFrom(DECODER_ADDRESS, 3);
   while(Wire.available()) {   // slave may send less than requested
     char c = Wire.read();    // receive a byte as character
     _data_in.concat(c);
@@ -135,7 +137,7 @@ String request_decode_event() {
 int cursor_vert_2 = 20;
 int x_offset = 3;
 
-void draw_time(int _mins, int _secs_t, int _secs_u) {
+void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   /*
   Display the remaining time on screen
 
@@ -160,7 +162,7 @@ void draw_time(int _mins, int _secs_t, int _secs_u) {
 }
 
 
-int proportion = 0;
+float proportion = 0;
 int prop_lock = 0;
 
 void draw_remaining_bar(int remaining) {
@@ -169,7 +171,7 @@ void draw_remaining_bar(int remaining) {
 
   :param remaining: remaining time expressed as total seconds
   */
-  proportion = (remaining / float(start_secs)) * float(SCREEN_WIDTH);
+  proportion = (remaining / start_secs) * SCREEN_WIDTH;
 
   // simple bars
   // display.fillRoundRect(0, 0, proportion, 5, display.height()/4, SSD1306_INVERSE);
@@ -187,8 +189,14 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
+bool is_glitching = false;
+int next_glitch = 0;
+int glitch_num = -1;
 
 void setup() {
+  randomSeed(start_secs);
+  next_glitch = random(start_secs);
+
   pinMode(ping_in_pin, INPUT);
 
   // set up the pins for win / lose inbound signals
@@ -254,8 +262,29 @@ void loop() {
   if ((curr_secs < 0) || (digitalRead(lose_sig_pin) == HIGH)) {
     lose();
   }
-  // otherwise, update clock
+  // otherwise, check for glitches and update clock
   else {
+    // glitch if time to glitch
+    is_glitching = false;
+    if (curr_secs > next_glitch & glitch_num == -1) glitch_num = random(num_glitches);
+    else {
+      switch (glitch_num) {
+        case 0:
+
+          break;
+        case 1:
+
+          break;
+        case 2:
+
+          break;
+        default:
+          next_glitch = curr_secs + random(start_secs);
+          break;
+      }
+    }
+
+    // update the clock
     time_mins = curr_secs / 60;
     time_secs = curr_secs % 60;
     time_secs_tens = (curr_secs % 60) / 10;
