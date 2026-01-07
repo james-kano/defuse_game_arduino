@@ -67,7 +67,7 @@ bool lost = false;
 
 // pins for inbound win signals from game modules
 //  - extend this array when adding more game modules
-const int win_sig_in_pins[] = {4, 5};
+const int win_sig_in_pins[2] = {4, 5};
 int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]);
 bool all_won = false;
 

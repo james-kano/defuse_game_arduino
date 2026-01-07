@@ -170,7 +170,7 @@ void write_passcode() {
 }
 
 
-// float proportion = 0;
+float proportion = 0;
 int prop_lock = 0;
 
 void draw_remaining_bar(int remaining) {
@@ -179,17 +179,9 @@ void draw_remaining_bar(int remaining) {
 
   :param remaining: remaining time expressed as total seconds
   */
-  float proportion = (remaining / start_secs) * SCREEN_WIDTH;
+  proportion = (remaining / float(start_secs)) * float(SCREEN_WIDTH);
 
   // simple bars
-  Serial.print(proportion);
-  Serial.print(", ");
-  Serial.print(remaining);
-  Serial.print(", ");
-  Serial.print(SCREEN_WIDTH);
-  Serial.print(", ");
-  Serial.println(start_secs);
-
   // display.fillRoundRect(0, 0, proportion, 5, display.height()/4, SSD1306_INVERSE);
   // display.fillRoundRect(display.width() - proportion, 7, proportion, 5, display.height()/4, SSD1306_INVERSE);
 
