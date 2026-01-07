@@ -164,9 +164,11 @@ void write_passcode() {
   /*
   Display the word 'passcode' on the display
   */
-  display.setTextSize(4);      // Normal 1:1 pixel scale
-  display.setCursor(10, 25);
-  display.write("passcode");
+  display.setTextColor(SSD1306_WHITE); // Draw white text
+
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setCursor(1, 55);
+  display.write("Passcode");
 }
 
 
@@ -199,7 +201,7 @@ void draw_remaining_bar(int remaining) {
 
 // bool is_glitching = false;
 bool is_glitching = true;
-String glitch_resolved_str = "   ";
+String glitch_resolved_str = "---";
 int next_glitch = 0;
 // int glitch_num = -1;
 int glitch_num = 2;
@@ -258,7 +260,7 @@ void loop() {
     }
   }
   // if all game modules won, win condition and exit loop
-  if (num_won == num_win_pins) {
+  if (num_won == num_win_pins & is_glitching == false) {
     win();
     return;
   }
@@ -317,8 +319,8 @@ void loop() {
 
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
-    // if (is_glitching == true & glitch_num == 2) write_passcode();
     draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 0);
+    if (is_glitching == true & glitch_num == 2) write_passcode();
 
     display.display();
     delay(100);
