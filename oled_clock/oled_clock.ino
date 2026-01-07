@@ -60,7 +60,7 @@ static const unsigned char PROGMEM logo_bmp[] = {
 
 #define DECODER_ADDRESS 0x1A
 #define ping_in_pin A3 // this pin allows I2C slave to signal for data request
-String i2c_data_in = "";
+String i2c_data_in = "   ";
 
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
@@ -148,7 +148,6 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   display.setTextColor(SSD1306_WHITE); // Draw white text
 
   display.setTextSize(4);      // Normal 1:1 pixel scale
-  int test = 48;
   display.setCursor(0 + x_offset, cursor_vert_2);
   display.write(48);
   display.setCursor(25 + x_offset, cursor_vert_2);
@@ -161,8 +160,17 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   display.write(_secs_u + 48);
 }
 
+void write_passcode() {
+  /*
+  Display the word 'passcode' on the display
+  */
+  display.setTextSize(4);      // Normal 1:1 pixel scale
+  display.setCursor(10, 25);
+  display.write("passcode");
+}
 
-float proportion = 0;
+
+// float proportion = 0;
 int prop_lock = 0;
 
 void draw_remaining_bar(int remaining) {
@@ -171,9 +179,17 @@ void draw_remaining_bar(int remaining) {
 
   :param remaining: remaining time expressed as total seconds
   */
-  proportion = (remaining / start_secs) * SCREEN_WIDTH;
+  float proportion = (remaining / start_secs) * SCREEN_WIDTH;
 
   // simple bars
+  Serial.print(proportion);
+  Serial.print(", ");
+  Serial.print(remaining);
+  Serial.print(", ");
+  Serial.print(SCREEN_WIDTH);
+  Serial.print(", ");
+  Serial.println(start_secs);
+
   // display.fillRoundRect(0, 0, proportion, 5, display.height()/4, SSD1306_INVERSE);
   // display.fillRoundRect(display.width() - proportion, 7, proportion, 5, display.height()/4, SSD1306_INVERSE);
 
@@ -189,11 +205,16 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
-bool is_glitching = false;
+// bool is_glitching = false;
+bool is_glitching = true;
+String glitch_resolved_str = "   ";
 int next_glitch = 0;
-int glitch_num = -1;
+// int glitch_num = -1;
+int glitch_num = 2;
 
 void setup() {
+  Serial.begin(9600);
+
   randomSeed(start_secs);
   next_glitch = random(start_secs);
 
@@ -250,11 +271,6 @@ void loop() {
     return;
   }
 
-  // see if data available on the I2C bus
-  if (digitalRead(ping_in_pin) == HIGH) {
-    i2c_data_in = request_decode_event();
-  }
-
   // calculate time remaining
   curr_secs = start_secs - (millis() / 1000);
 
@@ -265,24 +281,41 @@ void loop() {
   // otherwise, check for glitches and update clock
   else {
     // glitch if time to glitch
-    is_glitching = false;
-    if (curr_secs > next_glitch & glitch_num == -1) glitch_num = random(num_glitches);
-    else {
+    if (curr_secs > next_glitch & glitch_num == -1) {
+      glitch_num = random(num_glitches);
+      is_glitching = true;
+      glitch_resolved_str = String(glitch_num) + "w ";
+    }
+    // execute glitch
+    if (is_glitching == true) {
+      // see if data available on the I2C bus
+      if (digitalRead(ping_in_pin) == HIGH) {
+        i2c_data_in = request_decode_event();
+      }
+
       switch (glitch_num) {
-        case 0:
+        case 0: // glitching clock
+          // No code here - handled in draw_time() below.
+          break;
+        case 1: // red flashing light
 
           break;
-        case 1:
-
-          break;
-        case 2:
-
+        case 2: // passcode
+          // No code here - handled in write_passcode() below.
           break;
         default:
-          next_glitch = curr_secs + random(start_secs);
           break;
       }
+    
+      // if glitch is resolved, cancel glitching and queue-up next glitch interval
+      if (i2c_data_in == glitch_resolved_str) {
+        is_glitching = false;
+        i2c_data_in = "   ";
+        glitch_num == -1;
+        next_glitch = curr_secs + random(start_secs);
+      }
     }
+
 
     // update the clock
     time_mins = curr_secs / 60;
@@ -292,7 +325,8 @@ void loop() {
 
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
-    draw_time(time_mins, time_secs_tens, time_secs_units);
+    // if (is_glitching == true & glitch_num == 2) write_passcode();
+    draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 0);
 
     display.display();
     delay(100);
