@@ -199,12 +199,15 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
-// bool is_glitching = false;
-bool is_glitching = true;
+bool is_glitching = false;
 String glitch_resolved_str = "---";
 int next_glitch = 0;
-// int glitch_num = -1;
-int glitch_num = 2;
+int glitch_num = -1;
+
+// // test glitch vars
+// int glitch_num = 4;
+// bool is_glitching = true;
+// String glitch_resolved_str = "4w ";
 
 void setup() {
   Serial.begin(9600);
@@ -294,7 +297,13 @@ void loop() {
         case 1: // red flashing light
 
           break;
-        case 2: // passcode
+        case 2: // red flashing light
+
+          break;
+        case 3: // red flashing light
+
+          break;
+        case 4: // passcode
           // No code here - handled in write_passcode() below.
           break;
         default:
@@ -305,6 +314,7 @@ void loop() {
       if (i2c_data_in == glitch_resolved_str) {
         is_glitching = false;
         i2c_data_in = "   ";
+        // ToDo: clear the i2c buffer
         glitch_num == -1;
         next_glitch = curr_secs + random(start_secs);
       }
@@ -320,7 +330,7 @@ void loop() {
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
     draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 0);
-    if (is_glitching == true & glitch_num == 2) write_passcode();
+    if (is_glitching == true & glitch_num == 4) write_passcode();
 
     display.display();
     delay(100);
