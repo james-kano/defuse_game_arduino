@@ -145,9 +145,9 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   :param _secs_t: integer of tens of seconds (supports single digit)
   :param _secs_u: integer of units of seconds (supports single digit)
   */
-  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setTextColor(SSD1306_WHITE);
 
-  display.setTextSize(4);      // Normal 1:1 pixel scale
+  display.setTextSize(4);
   display.setCursor(0 + x_offset, cursor_vert_2);
   display.write(48);
   display.setCursor(25 + x_offset, cursor_vert_2);
@@ -160,15 +160,15 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   display.write(_secs_u + 48);
 }
 
-void write_passcode() {
+void write_message(char char_string[]) {
   /*
   Display the word 'passcode' on the display
   */
-  display.setTextColor(SSD1306_WHITE); // Draw white text
+  display.setTextColor(SSD1306_WHITE);
 
-  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextSize(1);
   display.setCursor(1, 55);
-  display.write("Passcode");
+  display.write(char_string);
 }
 
 
@@ -205,15 +205,20 @@ int next_glitch = 0;
 int glitch_num = -1;
 
 // // test glitch vars
-// int glitch_num = 4;
+// int glitch_num = 7;
 // bool is_glitching = true;
 // String glitch_resolved_str = "4w ";
+// int next_glitch = 0;
+
 
 void setup() {
   Serial.begin(9600);
 
-  randomSeed(start_secs);
+  // randomSeed(start_secs);
+  randomSeed(889);
   next_glitch = random(start_secs);
+  Serial.print("Next glitch: ");
+  Serial.println(next_glitch);
 
   pinMode(ping_in_pin, INPUT);
 
@@ -279,9 +284,11 @@ void loop() {
   else {
     // glitch if time to glitch
     if (curr_secs > next_glitch & glitch_num == -1) {
-      glitch_num = random(num_glitches);
+      glitch_num = random(1, num_glitches + 2); // +2 because start at 1 and exclusive upper bound
       is_glitching = true;
       glitch_resolved_str = String(glitch_num) + "w ";
+      Serial.print("Picked glitch num: ");
+      Serial.print(glitch_num);
     }
     // execute glitch
     if (is_glitching == true) {
@@ -289,24 +296,21 @@ void loop() {
       if (digitalRead(ping_in_pin) == HIGH) {
         i2c_data_in = request_decode_event();
       }
-
       switch (glitch_num) {
-        case 0: // glitching clock
+        // case 1: // Wire sequencer
+        //   break;
+        case 2: // Repair display (glitching clock)
           // No code here - handled in draw_time() below.
           break;
-        case 1: // red flashing light
-
-          break;
-        case 2: // red flashing light
-
-          break;
-        case 3: // red flashing light
+        case 3: // Quash overload (red flashing light)
 
           break;
         case 4: // passcode
           // No code here - handled in write_passcode() below.
           break;
         default:
+          Serial.print("Unhandled glitch: ");
+          Serial.println(glitch_num);
           break;
       }
     
@@ -315,7 +319,7 @@ void loop() {
         is_glitching = false;
         i2c_data_in = "   ";
         // ToDo: clear the i2c buffer
-        glitch_num == -1;
+        glitch_num = -1;
         next_glitch = curr_secs + random(start_secs);
       }
     }
@@ -330,7 +334,7 @@ void loop() {
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
     draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 0);
-    if (is_glitching == true & glitch_num == 4) write_passcode();
+    if (is_glitching == true & glitch_num == 4) write_message("Passcode");
 
     display.display();
     delay(100);
