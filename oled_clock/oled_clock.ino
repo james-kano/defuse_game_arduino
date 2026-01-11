@@ -136,6 +136,7 @@ String request_decode_event() {
 
 int cursor_vert_2 = 20;
 int x_offset = 3;
+int x_pos[5] = {0, 25, 50, 75, 100};
 
 void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   /*
@@ -148,16 +149,26 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   display.setTextColor(SSD1306_WHITE);
 
   display.setTextSize(4);
-  display.setCursor(0 + x_offset, cursor_vert_2);
+  display.setCursor(x_pos[0] + x_offset, cursor_vert_2);
   display.write(48);
-  display.setCursor(25 + x_offset, cursor_vert_2);
+  display.setCursor(x_pos[1] + x_offset, cursor_vert_2);
   display.write(_mins + 48);
-  display.setCursor(50 + x_offset, cursor_vert_2);
+  display.setCursor(x_pos[2] + x_offset, cursor_vert_2);
   display.write(':');
-  display.setCursor(75 + x_offset, cursor_vert_2);
+  display.setCursor(x_pos[3] + x_offset, cursor_vert_2);
   display.write(_secs_t + 48);
-  display.setCursor(100 + x_offset, cursor_vert_2);
+  display.setCursor(x_pos[4] + x_offset, cursor_vert_2);
   display.write(_secs_u + 48);
+
+  // add a glicth char if glitching
+  if (_glitch == true & random(5) > 2) {
+    display.setCursor(x_pos[random(5)] + x_offset, cursor_vert_2);
+    display.write(random(255));
+    display.setCursor(x_pos[random(5)] + x_offset, cursor_vert_2);
+    display.write(random(255));
+
+    // delay(300);
+  }
 }
 
 void write_message(char char_string[]) {
@@ -199,23 +210,22 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
-bool is_glitching = false;
-String glitch_resolved_str = "---";
-int next_glitch = 0;
-int glitch_num = -1;
-
-// // test glitch vars
-// int glitch_num = 7;
-// bool is_glitching = true;
-// String glitch_resolved_str = "4w ";
+// bool is_glitching = false;
+// String glitch_resolved_str = "---";
 // int next_glitch = 0;
+// int glitch_num = -1;
+
+// test glitch vars
+int glitch_num = 2;
+bool is_glitching = true;
+String glitch_resolved_str = "2w ";
+int next_glitch = 0;
 
 
 void setup() {
   Serial.begin(9600);
 
-  // randomSeed(start_secs);
-  randomSeed(889);
+  randomSeed(start_secs); // ToDo: fix the randomSeed as breaking
   next_glitch = random(start_secs);
   Serial.print("Next glitch: ");
   Serial.println(next_glitch);
@@ -333,7 +343,7 @@ void loop() {
 
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
-    draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 0);
+    draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 2);
     if (is_glitching == true & glitch_num == 4) write_message("Passcode");
 
     display.display();
