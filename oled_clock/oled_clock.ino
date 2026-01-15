@@ -62,6 +62,10 @@ static const unsigned char PROGMEM logo_bmp[] = {
 #define ping_in_pin A3 // this pin allows I2C slave to signal for data request
 String i2c_data_in = "   ";
 
+// pins for glitching
+#define floating_seed_pin A1
+#define glitch_led_pin A2
+
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
@@ -214,6 +218,9 @@ bool is_glitching = false;
 String glitch_resolved_str = "---";
 int next_glitch = 0;
 int glitch_num = -1;
+int glitch_led_brightness = 0;
+bool glitch_led_direction = 1;
+
 
 // // test glitch vars
 // int glitch_num = 2;
@@ -225,20 +232,23 @@ int glitch_num = -1;
 void setup() {
   Serial.begin(9600);
 
-  randomSeed(analogRead(A1));
+  //setup glitching
+  randomSeed(analogRead(floating_seed_pin));
   next_glitch = random(start_secs);
   Serial.print("Next glitch: ");
   Serial.println(next_glitch);
+  pinMode(glitch_led_pin, OUTPUT);
+  digitalWrite(glitch_led_pin, LOW);
 
   pinMode(ping_in_pin, INPUT);
 
-  // set up the pins for win / lose inbound signals
+  // setup the pins for win / lose inbound signals
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
   }
   pinMode(lose_sig_pin, INPUT);
 
-  // set up the pins for win / lose effects
+  // setup the pins for win / lose effects
   pinMode(explode_led_pin, OUTPUT);
   pinMode(safe_led_pin, OUTPUT);
   digitalWrite(explode_led_pin, LOW);
@@ -313,7 +323,16 @@ void loop() {
           // No code here - handled in draw_time() below.
           break;
         case 3: // Quash overload (red flashing light)
-
+          if (glitch_led_brightness > 255) {
+            glitch_led_direction = -1;
+            glitch_led_brightness = 255;
+          }
+          if (glitch_led_brightness < 0) {
+            glitch_led_direction = 1;
+            glitch_led_brightness = 0;
+          }
+          analogWrite(glitch_led_pin, glitch_led_brightness);
+          glitch_led_brightness += 3 * glitch_led_direction;
           break;
         case 4: // passcode
           // No code here - handled in write_passcode() below.
