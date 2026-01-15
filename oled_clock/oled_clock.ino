@@ -210,22 +210,22 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
-// bool is_glitching = false;
-// String glitch_resolved_str = "---";
-// int next_glitch = 0;
-// int glitch_num = -1;
-
-// test glitch vars
-int glitch_num = 2;
-bool is_glitching = true;
-String glitch_resolved_str = "2w ";
+bool is_glitching = false;
+String glitch_resolved_str = "---";
 int next_glitch = 0;
+int glitch_num = -1;
+
+// // test glitch vars
+// int glitch_num = 2;
+// bool is_glitching = true;
+// String glitch_resolved_str = "2w ";
+// int next_glitch = 0;
 
 
 void setup() {
   Serial.begin(9600);
 
-  randomSeed(start_secs); // ToDo: fix the randomSeed as breaking
+  randomSeed(analogRead(A1));
   next_glitch = random(start_secs);
   Serial.print("Next glitch: ");
   Serial.println(next_glitch);
@@ -294,7 +294,7 @@ void loop() {
   else {
     // glitch if time to glitch
     if (curr_secs > next_glitch & glitch_num == -1) {
-      glitch_num = random(1, num_glitches + 2); // +2 because start at 1 and exclusive upper bound
+      glitch_num = random(2, num_glitches + 2); // +2 because start at 1 and exclusive upper bound
       is_glitching = true;
       glitch_resolved_str = String(glitch_num) + "w ";
       Serial.print("Picked glitch num: ");
@@ -330,7 +330,9 @@ void loop() {
         i2c_data_in = "   ";
         // ToDo: clear the i2c buffer
         glitch_num = -1;
-        next_glitch = curr_secs + random(start_secs);
+        next_glitch = start_secs - curr_secs + random(start_secs / 2);
+        Serial.print("New next glitch: ");
+        Serial.println(next_glitch);
       }
     }
 
