@@ -465,7 +465,7 @@ int standby = 0;
 
 void setup() {
   // setup win outbound signal and communal lose signal
-  pinMode(seed_pin, INPUT);
+  // pinMode(seed_pin, INPUT);
   pinMode(lose_sig, INPUT);
   pinMode(win_sig, OUTPUT);
   digitalWrite(win_sig, LOW);

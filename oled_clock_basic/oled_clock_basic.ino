@@ -58,14 +58,6 @@ static const unsigned char PROGMEM logo_bmp[] = {
 };
 
 
-#define DECODER_ADDRESS 0x1A
-#define ping_in_pin A3 // this pin allows I2C slave to signal for data request
-String i2c_data_in = "   ";
-
-// pins for glitching
-#define floating_seed_pin A1
-#define glitch_led_pin A2
-
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
 #define explode_led_pin 3
@@ -80,11 +72,9 @@ int num_win_pins = sizeof(win_sig_in_pins) / sizeof(win_sig_in_pins[0]);
 bool all_won = false;
 
 // set the time allowed to complete the game
-// #define start_secs 120 // 2 min
-#define start_secs 180 // 3 min
-// #define start_secs 20 // 20 seconds
-
-int num_glitches = 3;
+#define start_secs 120 // 2 min
+// #define start_secs = 180; // 3 min
+// #define start_secs = 20; // 20 seconds
 
 
 void win() {
@@ -114,35 +104,10 @@ void lose() {
 }
 
 
-void send_to_decoder(int _data_num) {
-  /*
-  Transmit data to the decoder
-  */
-  Wire.beginTransmission(DECODER_ADDRESS);
-  Wire.write(_data_num); 
-  Wire.endTransmission();
-}
-
-
-String request_decode_event() {
-  /*
-  Request data from the decoder
-  */
-  String _data_in = "";
-  Wire.requestFrom(DECODER_ADDRESS, 3);
-  while(Wire.available()) {   // slave may send less than requested
-    char c = Wire.read();    // receive a byte as character
-    _data_in.concat(c);
-  }
-  return _data_in;
-}
-
-
 int cursor_vert_2 = 20;
 int x_offset = 3;
-int x_pos[5] = {0, 25, 50, 75, 100};
 
-void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
+void draw_time(int _mins, int _secs_t, int _secs_u) {
   /*
   Display the remaining time on screen
 
@@ -150,44 +115,24 @@ void draw_time(int _mins, int _secs_t, int _secs_u, bool _glitch) {
   :param _secs_t: integer of tens of seconds (supports single digit)
   :param _secs_u: integer of units of seconds (supports single digit)
   */
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(SSD1306_WHITE); // Draw white text
 
-  display.setTextSize(4);
-  display.setCursor(x_pos[0] + x_offset, cursor_vert_2);
+  display.setTextSize(4);      // Normal 1:1 pixel scale
+  int test = 48;
+  display.setCursor(0 + x_offset, cursor_vert_2);
   display.write(48);
-  display.setCursor(x_pos[1] + x_offset, cursor_vert_2);
+  display.setCursor(25 + x_offset, cursor_vert_2);
   display.write(_mins + 48);
-  display.setCursor(x_pos[2] + x_offset, cursor_vert_2);
+  display.setCursor(50 + x_offset, cursor_vert_2);
   display.write(':');
-  display.setCursor(x_pos[3] + x_offset, cursor_vert_2);
+  display.setCursor(75 + x_offset, cursor_vert_2);
   display.write(_secs_t + 48);
-  display.setCursor(x_pos[4] + x_offset, cursor_vert_2);
+  display.setCursor(100 + x_offset, cursor_vert_2);
   display.write(_secs_u + 48);
-
-  // add a glicth char if glitching
-  if (_glitch == true & random(5) > 2) {
-    display.setCursor(x_pos[random(5)] + x_offset, cursor_vert_2);
-    display.write(random(255));
-    display.setCursor(x_pos[random(5)] + x_offset, cursor_vert_2);
-    display.write(random(255));
-
-    // delay(300);
-  }
-}
-
-void write_message(char char_string[]) {
-  /*
-  Display the word 'passcode' on the display
-  */
-  display.setTextColor(SSD1306_WHITE);
-
-  display.setTextSize(1);
-  display.setCursor(1, 55);
-  display.write(char_string);
 }
 
 
-float proportion = 0;
+int proportion = 0;
 int prop_lock = 0;
 
 void draw_remaining_bar(int remaining) {
@@ -214,41 +159,15 @@ void draw_remaining_bar(int remaining) {
   } 
 }
 
-bool is_glitching = false;
-String glitch_resolved_str = "---";
-int next_glitch = 0;
-int glitch_num = -1;
-
-// // test glitch vars
-// int glitch_num = 3;
-// bool is_glitching = true;
-// String glitch_resolved_str = "3w ";
-// int next_glitch = 0;
-
-int glitch_led_brightness = 0;
-int glitch_led_direction = 1;
-
 
 void setup() {
-  Serial.begin(9600);
-
-  //setup glitching
-  randomSeed(analogRead(floating_seed_pin));
-  next_glitch = random(start_secs);
-  Serial.print("Next glitch: ");
-  Serial.println(next_glitch);
-  pinMode(glitch_led_pin, OUTPUT);
-  digitalWrite(glitch_led_pin, LOW);
-
-  pinMode(ping_in_pin, INPUT);
-
-  // setup the pins for win / lose inbound signals
+  // set up the pins for win / lose inbound signals
   for (int i=0; i<num_win_pins; i++) {
     pinMode(win_sig_in_pins[i], INPUT);
   }
   pinMode(lose_sig_pin, INPUT);
 
-  // setup the pins for win / lose effects
+  // set up the pins for win / lose effects
   pinMode(explode_led_pin, OUTPUT);
   pinMode(safe_led_pin, OUTPUT);
   digitalWrite(explode_led_pin, LOW);
@@ -287,8 +206,9 @@ void loop() {
       num_won++;
     }
   }
+
   // if all game modules won, win condition and exit loop
-  if (num_won == num_win_pins & is_glitching == false) {
+  if (num_won == num_win_pins) {
     win();
     return;
   }
@@ -300,68 +220,8 @@ void loop() {
   if ((curr_secs < 0) || (digitalRead(lose_sig_pin) == HIGH)) {
     lose();
   }
-  // otherwise, check for glitches and update clock
+  // otherwise, update clock
   else {
-    // glitch if time to glitch
-    if (curr_secs > next_glitch & glitch_num == -1) {
-      glitch_num = random(2, num_glitches + 2); // +2 because start at 1 and exclusive upper bound
-      is_glitching = true;
-      glitch_resolved_str = String(glitch_num) + "w ";
-      Serial.print("Picked glitch num: ");
-      Serial.print(glitch_num);
-    }
-    // execute glitch
-    if (is_glitching == true) {
-      // see if data available on the I2C bus
-      if (digitalRead(ping_in_pin) == HIGH) {
-        i2c_data_in = request_decode_event();
-      }
-      switch (glitch_num) {
-        // case 1: // Wire sequencer
-        //   break;
-        case 2: // Repair display (glitching clock)
-          // No code here - handled in draw_time() below.
-          break;
-        case 3: // Quash overload (red flashing light)
-          if (glitch_led_brightness > 255) {
-            glitch_led_direction = -1;
-            glitch_led_brightness = 255;
-          }
-          if (glitch_led_brightness < 100) {
-            glitch_led_direction = 1;
-            glitch_led_brightness = 100;
-          }
-          analogWrite(glitch_led_pin, glitch_led_brightness);
-          // digitalWrite(glitch_led_pin, HIGH);
-          // Serial.print("Overload: ");
-          // Serial.println(glitch_led_brightness);
-          glitch_led_brightness += (10 * glitch_led_direction);
-          // Serial.println(3 * glitch_led_direction);
-          break;
-        case 4: // passcode
-          // No code here - handled in write_passcode() below.
-          break;
-        default:
-          Serial.print("Unhandled glitch: ");
-          Serial.println(glitch_num);
-          break;
-      }
-    
-      // if glitch is resolved, cancel glitching and queue-up next glitch interval
-      if (i2c_data_in == glitch_resolved_str) {
-        is_glitching = false;
-        i2c_data_in = "   ";
-        // ToDo: clear the i2c buffer
-        glitch_num = -1;
-        next_glitch = start_secs - curr_secs + random(start_secs);
-        Serial.print("New next glitch: ");
-        Serial.println(next_glitch);
-        // Any glitch-specific resets
-        digitalWrite(glitch_led_pin, LOW); // 3.Quash overload (red flashing light)
-      }
-    }
-
-    // update the clock
     time_mins = curr_secs / 60;
     time_secs = curr_secs % 60;
     time_secs_tens = (curr_secs % 60) / 10;
@@ -369,8 +229,7 @@ void loop() {
 
     display.clearDisplay();
     draw_remaining_bar(curr_secs);
-    draw_time(time_mins, time_secs_tens, time_secs_units, is_glitching == true & glitch_num == 2);
-    if (is_glitching == true & glitch_num == 4) write_message("Passcode");
+    draw_time(time_mins, time_secs_tens, time_secs_units);
 
     display.display();
     delay(100);
