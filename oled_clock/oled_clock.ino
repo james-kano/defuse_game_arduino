@@ -64,7 +64,7 @@ String i2c_data_in = "   ";
 
 // pins for glitching
 #define floating_seed_pin A1
-#define glitch_led_pin A2 // ToDo: Wire in this LED!!! <<<<<<<<<<<<<<<<<<<<
+#define glitch_led_pin A2
 
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
@@ -218,15 +218,15 @@ bool is_glitching = false;
 String glitch_resolved_str = "---";
 int next_glitch = 0;
 int glitch_num = -1;
-int glitch_led_brightness = 0;
-bool glitch_led_direction = 1;
-
 
 // // test glitch vars
-// int glitch_num = 2;
+// int glitch_num = 3;
 // bool is_glitching = true;
-// String glitch_resolved_str = "2w ";
+// String glitch_resolved_str = "3w ";
 // int next_glitch = 0;
+
+int glitch_led_brightness = 0;
+int glitch_led_direction = 1;
 
 
 void setup() {
@@ -327,12 +327,16 @@ void loop() {
             glitch_led_direction = -1;
             glitch_led_brightness = 255;
           }
-          if (glitch_led_brightness < 0) {
+          if (glitch_led_brightness < 100) {
             glitch_led_direction = 1;
-            glitch_led_brightness = 0;
+            glitch_led_brightness = 100;
           }
           analogWrite(glitch_led_pin, glitch_led_brightness);
-          glitch_led_brightness += 3 * glitch_led_direction;
+          // digitalWrite(glitch_led_pin, HIGH);
+          // Serial.print("Overload: ");
+          // Serial.println(glitch_led_brightness);
+          glitch_led_brightness += (10 * glitch_led_direction);
+          // Serial.println(3 * glitch_led_direction);
           break;
         case 4: // passcode
           // No code here - handled in write_passcode() below.
@@ -349,12 +353,13 @@ void loop() {
         i2c_data_in = "   ";
         // ToDo: clear the i2c buffer
         glitch_num = -1;
-        next_glitch = start_secs - curr_secs + random(start_secs / 2);
+        next_glitch = start_secs - curr_secs + random(start_secs);
         Serial.print("New next glitch: ");
         Serial.println(next_glitch);
+        // Any glitch-specific resets
+        digitalWrite(glitch_led_pin, LOW); // 3.Quash overload (red flashing light)
       }
     }
-
 
     // update the clock
     time_mins = curr_secs / 60;
