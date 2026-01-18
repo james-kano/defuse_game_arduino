@@ -64,7 +64,7 @@ String i2c_data_in = "   ";
 
 // pins for glitching
 #define floating_seed_pin A1
-#define glitch_led_pin A2
+#define glitch_led_pin A2 // ToDo: Wire in this LED!!! <<<<<<<<<<<<<<<<<<<<
 
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2

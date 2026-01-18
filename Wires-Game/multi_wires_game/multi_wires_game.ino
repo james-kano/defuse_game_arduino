@@ -612,7 +612,7 @@ void check_progress_game_6() {
 
 void setup() {
   // setup random seed
-  pinMode(seed_pin, INPUT);
+  // pinMode(seed_pin, INPUT);
   ee_seed = analogRead(seed_pin);
   randomSeed(ee_seed);
   Serial.begin(9600);
