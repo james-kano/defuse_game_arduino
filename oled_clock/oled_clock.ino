@@ -332,11 +332,7 @@ void loop() {
             glitch_led_brightness = 100;
           }
           analogWrite(glitch_led_pin, glitch_led_brightness);
-          // digitalWrite(glitch_led_pin, HIGH);
-          // Serial.print("Overload: ");
-          // Serial.println(glitch_led_brightness);
           glitch_led_brightness += (10 * glitch_led_direction);
-          // Serial.println(3 * glitch_led_direction);
           break;
         case 4: // passcode
           // No code here - handled in write_passcode() below.
@@ -351,7 +347,6 @@ void loop() {
       if (i2c_data_in == glitch_resolved_str) {
         is_glitching = false;
         i2c_data_in = "   ";
-        // ToDo: clear the i2c buffer
         glitch_num = -1;
         next_glitch = start_secs - curr_secs + random(start_secs);
         Serial.print("New next glitch: ");
@@ -377,4 +372,3 @@ void loop() {
 
   }
 }
-
