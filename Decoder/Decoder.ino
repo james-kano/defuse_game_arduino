@@ -70,6 +70,7 @@ void request_event() {
   Handler for sending data to I2C master upon request
   */
   Wire.write(data_to_send.c_str());
+  data_to_send = "  ";
 }
 
 void ping_data_ready(String _data) {
