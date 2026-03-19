@@ -9,8 +9,8 @@
    - Low rail connected
    - Disconnected
 
-  High rail should be connected to digital pin 7.
-  Low rail should be connected to digital pin 8.
+  High rail should be connected to analogue pin A5.
+  Low rail should be connected to analogue pin A4.
   All input wires should have 100K pull-down to GND, then conncted to inputs specified below. 
 
  *
@@ -33,18 +33,18 @@
 const int win_sig_out = 10;
 const int lose_sig = 11;
 
-const int high_rail = 7;
-const int low_rail = 8;
+const int high_rail = A5;
+const int low_rail = A4;
 
-int seed_pin = A6;
+int seed_pin = A0;
 int ee_seed = 0;
 
-const int red = A0;
-const int yellow = A1;
-const int orange = A2;
-const int white = A3;
-const int blue = A4;
-const int green = A5;
+const int red = 1;
+const int yellow = 5;
+const int orange = 7;
+const int white = 9;
+const int blue = 12;
+const int green = 13;
 
 const int wires[6] = {red, yellow, orange, white, blue, green};
 
