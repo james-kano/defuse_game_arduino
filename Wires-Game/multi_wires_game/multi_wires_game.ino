@@ -46,7 +46,8 @@ const int white = A3;
 const int blue = A4;
 const int green = A5;
 
-const int wires[6] = {red, yellow, orange, white, blue, green};
+const int num_wires = 6;
+const int wires[num_wires] = {red, yellow, orange, white, blue, green};
 
 int curr_pin_states[6] = {0, 0, 0, 0, 0, 0};
 int allowed_mistakes[6] = {true, true, true, true, true, true};
@@ -69,16 +70,12 @@ int get_curr_pin_state(int pin) {
   // Maps the input value against uneven thresholds for 3-level mapping
   // open = 0, low = 1, high = 2
   int val_in = 0;
-  digitalWrite(high_rail, HIGH);
-  if (digitalRead(pin) == HIGH) {
-    val_in = 2;
-  }
-  digitalWrite(high_rail, LOW);
-  digitalWrite(low_rail, HIGH);
-  if (digitalRead(pin) == HIGH) {
-    val_in = 1;
-  }
-  digitalWrite(low_rail, LOW);
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, HIGH);
+  if (digitalRead(high_rail) == HIGH) val_in = 2;
+  if (digitalRead(low_rail) == HIGH) val_in = 1;
+  digitalWrite(pin, LOW);
+  pinMode(pin, INPUT);
   return val_in;
 }
 
@@ -99,8 +96,10 @@ void lose () {
   digitalWrite(top, LOW);
   digitalWrite(middle, LOW);
   digitalWrite(bottom, LOW);
-  digitalWrite(high_rail, LOW);
-  digitalWrite(low_rail, LOW);
+  for (int i=0; i<num_wires; i++) {
+    pinMode(wires[i], OUTPUT);
+    digitalWrite(wires[i], LOW);
+  }  
 }
 
 
@@ -627,10 +626,8 @@ void setup() {
   digitalWrite(win_sig_out, LOW);
   pinMode(lose_sig, INPUT);
   // setup the rail pins;
-  pinMode(high_rail, OUTPUT);
-  digitalWrite(high_rail, LOW);
-  pinMode(low_rail, OUTPUT);
-  digitalWrite(low_rail, LOW);
+  pinMode(high_rail, INPUT);
+  pinMode(low_rail, INPUT);
   // set the sequence indicator LEDs
 
   game_select = random(7); // doesn't work for some reason
