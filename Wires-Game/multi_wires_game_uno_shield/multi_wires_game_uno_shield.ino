@@ -9,8 +9,8 @@
    - Low rail connected
    - Disconnected
 
-  High rail should be connected to digital pin 7.
-  Low rail should be connected to digital pin 8.
+  High rail should be connected to analogue pin A5.
+  Low rail should be connected to analogue pin A4.
   All input wires should have 100K pull-down to GND, then conncted to inputs specified below. 
 
  *
@@ -33,21 +33,20 @@
 const int win_sig_out = 10;
 const int lose_sig = 11;
 
-const int high_rail = 7;
-const int low_rail = 8;
+const int high_rail = A5;
+const int low_rail = A4;
 
-int seed_pin = A6;
+int seed_pin = A0;
 int ee_seed = 0;
 
-const int red = A0;
-const int yellow = A1;
-const int orange = A2;
-const int white = A3;
-const int blue = A4;
-const int green = A5;
+const int red = 1;
+const int yellow = 5;
+const int orange = 7;
+const int white = 9;
+const int blue = 12;
+const int green = 13;
 
-const int num_wires = 6;
-const int wires[num_wires] = {red, yellow, orange, white, blue, green};
+const int wires[6] = {red, yellow, orange, white, blue, green};
 
 int curr_pin_states[6] = {0, 0, 0, 0, 0, 0};
 int allowed_mistakes[6] = {true, true, true, true, true, true};
@@ -70,12 +69,16 @@ int get_curr_pin_state(int pin) {
   // Maps the input value against uneven thresholds for 3-level mapping
   // open = 0, low = 1, high = 2
   int val_in = 0;
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, HIGH);
-  if (digitalRead(high_rail) == HIGH) val_in = 2;
-  if (digitalRead(low_rail) == HIGH) val_in = 1;
-  digitalWrite(pin, LOW);
-  pinMode(pin, INPUT);
+  digitalWrite(high_rail, HIGH);
+  if (digitalRead(pin) == HIGH) {
+    val_in = 2;
+  }
+  digitalWrite(high_rail, LOW);
+  digitalWrite(low_rail, HIGH);
+  if (digitalRead(pin) == HIGH) {
+    val_in = 1;
+  }
+  digitalWrite(low_rail, LOW);
   return val_in;
 }
 
@@ -96,10 +99,8 @@ void lose () {
   digitalWrite(top, LOW);
   digitalWrite(middle, LOW);
   digitalWrite(bottom, LOW);
-  for (int i=0; i<num_wires; i++) {
-    pinMode(wires[i], OUTPUT);
-    digitalWrite(wires[i], LOW);
-  }  
+  digitalWrite(high_rail, LOW);
+  digitalWrite(low_rail, LOW);
 }
 
 
@@ -626,8 +627,10 @@ void setup() {
   digitalWrite(win_sig_out, LOW);
   pinMode(lose_sig, INPUT);
   // setup the rail pins;
-  pinMode(high_rail, INPUT);
-  pinMode(low_rail, INPUT);
+  pinMode(high_rail, OUTPUT);
+  digitalWrite(high_rail, LOW);
+  pinMode(low_rail, OUTPUT);
+  digitalWrite(low_rail, LOW);
   // set the sequence indicator LEDs
 
   game_select = random(7); // doesn't work for some reason
