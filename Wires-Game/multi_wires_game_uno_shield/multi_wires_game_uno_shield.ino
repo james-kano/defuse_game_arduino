@@ -46,10 +46,11 @@ const int white = 9;
 const int blue = 12;
 const int green = 13;
 
-const int wires[6] = {red, yellow, orange, white, blue, green};
+const int num_wires = 6;
+const int wires[num_wires] = {red, yellow, orange, white, blue, green};
 
-int curr_pin_states[6] = {0, 0, 0, 0, 0, 0};
-int allowed_mistakes[6] = {true, true, true, true, true, true};
+int curr_pin_states[num_wires] = {0, 0, 0, 0, 0, 0};
+int allowed_mistakes[num_wires] = {true, true, true, true, true, true};
 
 //Start light pin declarations
 const int top = 2;
@@ -69,16 +70,12 @@ int get_curr_pin_state(int pin) {
   // Maps the input value against uneven thresholds for 3-level mapping
   // open = 0, low = 1, high = 2
   int val_in = 0;
-  digitalWrite(high_rail, HIGH);
-  if (digitalRead(pin) == HIGH) {
-    val_in = 2;
-  }
-  digitalWrite(high_rail, LOW);
-  digitalWrite(low_rail, HIGH);
-  if (digitalRead(pin) == HIGH) {
-    val_in = 1;
-  }
-  digitalWrite(low_rail, LOW);
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, HIGH);
+  if (digitalRead(high_rail) == HIGH) val_in = 2;
+  if (digitalRead(low_rail) == HIGH) val_in = 1;
+  digitalWrite(pin, LOW);
+  pinMode(pin, INPUT);
   return val_in;
 }
 
@@ -99,8 +96,10 @@ void lose () {
   digitalWrite(top, LOW);
   digitalWrite(middle, LOW);
   digitalWrite(bottom, LOW);
-  digitalWrite(high_rail, LOW);
-  digitalWrite(low_rail, LOW);
+  for (int i=0; i<num_wires; i++) {
+    pinMode(wires[i], OUTPUT);
+    digitalWrite(wires[i], LOW);
+  }
 }
 
 
@@ -167,7 +166,7 @@ void check_progress_game_0() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -234,7 +233,7 @@ void check_progress_game_1() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -307,7 +306,7 @@ void check_progress_game_2() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -380,7 +379,7 @@ void check_progress_game_3() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -453,7 +452,7 @@ void check_progress_game_4() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -526,7 +525,7 @@ void check_progress_game_5() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -599,7 +598,7 @@ void check_progress_game_6() {
   
   if (correct == true) {
       // set curr_pin_states
-      for (int i=0; i<6; i++) {
+      for (int i=0; i<num_wires; i++) {
         int curr_pin_state = get_curr_pin_state(wires[i]);
         int prev_pin_state = curr_pin_states[i];
       }
@@ -618,7 +617,7 @@ void setup() {
   Serial.print("ee_seed: ");
   Serial.println(ee_seed);
   // set the current wire conditions
-  for (int i=0; i<6; i++) {
+  for (int i=0; i<num_wires; i++) {
     int curr_pin_state = get_curr_pin_state(wires[i]);
     curr_pin_states[i] = curr_pin_state;
   }
@@ -627,10 +626,8 @@ void setup() {
   digitalWrite(win_sig_out, LOW);
   pinMode(lose_sig, INPUT);
   // setup the rail pins;
-  pinMode(high_rail, OUTPUT);
-  digitalWrite(high_rail, LOW);
-  pinMode(low_rail, OUTPUT);
-  digitalWrite(low_rail, LOW);
+  pinMode(high_rail, INPUT);
+  pinMode(low_rail, INPUT);
   // set the sequence indicator LEDs
 
   game_select = random(7); // doesn't work for some reason
@@ -717,11 +714,11 @@ void loop() {
   }
   // check for wire change
   wire_change = false;
-  for (int i=0; i<6; i++) {
+  for (int i=0; i<num_wires; i++) {
     allowed_mistakes[i] = true;
   }
   if (mistake_count < lose_count) {
-    for (int i=0; i<6; i++) {
+    for (int i=0; i<num_wires; i++) {
       int curr_pin_state = get_curr_pin_state(wires[i]);
       int prev_pin_state = curr_pin_states[i];
       if (curr_pin_state != prev_pin_state) {
