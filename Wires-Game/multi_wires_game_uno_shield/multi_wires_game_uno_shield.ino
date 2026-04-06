@@ -30,21 +30,21 @@
 /**************************************************************************/
 
 
-const int win_sig_out = 10;
-const int lose_sig = 11;
+const int win_sig_out = 12;
+const int lose_sig = 13;
 
-const int high_rail = A5;
-const int low_rail = A4;
+const int high_rail = A1;
+const int low_rail = A2;
 
 int seed_pin = A0;
 int ee_seed = 0;
 
-const int red = 1;
-const int yellow = 5;
+const int red = 5;
+const int yellow = 6;
 const int orange = 7;
-const int white = 9;
-const int blue = 12;
-const int green = 13;
+const int white = 8;
+const int blue = 9;
+const int green = 10;
 
 const int num_wires = 6;
 const int wires[num_wires] = {red, yellow, orange, white, blue, green};
@@ -53,9 +53,9 @@ int curr_pin_states[num_wires] = {0, 0, 0, 0, 0, 0};
 int allowed_mistakes[num_wires] = {true, true, true, true, true, true};
 
 //Start light pin declarations
-const int top = 2;
-const int middle = 3;
-const int bottom = 4;
+const int top = A5;
+const int middle = A4;
+const int bottom = A3;
 
 int game_select = 0;
 
