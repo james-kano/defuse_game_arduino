@@ -64,7 +64,7 @@ String i2c_data_in = "   ";
 
 // pins for glitching
 #define floating_seed_pin A1
-#define glitch_led_pin A2
+#define glitch_led_pin 12 // A2
 
 // pins for win / lose effects (outbound signals)
 #define safe_led_pin 2
@@ -247,6 +247,8 @@ void setup() {
     pinMode(win_sig_in_pins[i], INPUT);
   }
   pinMode(lose_sig_pin, INPUT);
+  pinMode(A7, INPUT); // A7 appears dead -> lose_sig_pin
+  
 
   // setup the pins for win / lose effects
   pinMode(explode_led_pin, OUTPUT);
